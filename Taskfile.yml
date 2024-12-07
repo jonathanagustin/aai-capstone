@@ -1,0 +1,198 @@
+# Taskfile.yml
+version: "3"
+
+vars:
+  TEMPLATE_PATH: assets/templates/template.pptx
+  CONFIG_PATH: template.yml
+
+tasks:
+  default:
+    desc: Run the complete workflow
+    cmds:
+      - task: setup
+      - task: install-deps
+      - task: analyze:save
+      - task: build
+      - task: convert
+    silent: true
+
+  setup:
+    desc: Create necessary directories and log file
+    cmds:
+      - |
+        mkdir -p assets/templates
+    status:
+      - test -d assets/templates
+
+  install-deps:
+    desc: Install required dependencies
+    cmds:
+      - |
+        if ! command -v libreoffice >/dev/null 2>&1; then
+          echo "LibreOffice not found. Installing LibreOffice..."
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-common libreoffice-writer
+        else
+          echo "LibreOffice is already installed."
+        fi
+    silent: true
+
+  build:
+    desc: Build PowerPoint presentations
+    deps: [setup]
+    cmds:
+      - python3 scripts/slide_creator.py
+    sources:
+      - scripts/*.py
+      - "{{.TEMPLATE_PATH}}"
+      - "{{.CONFIG_PATH}}"
+    generates:
+      - "*.pptx"
+    silent: true
+
+  convert:
+    desc: Convert PPTX to PDF using LibreOffice
+    deps: [setup, build]
+    cmds:
+      - |
+        echo "Converting presentations to PDF..."
+        shopt -s nullglob  # Handle case when no .pptx files exist
+        pptx_files=( *.pptx )
+        if [ ${#pptx_files[@]} -eq 0 ]; then
+          echo "No presentations found to convert. Skipping conversion step."
+          exit 0  # Changed from exit 1 to exit 0 to prevent task failure
+        fi
+        for file in "${pptx_files[@]}"; do
+          if [ -f "$file" ]; then  # Check if file exists
+            echo "Converting $file to PDF..."
+            libreoffice --headless --convert-to pdf "$file" >> conversion.log 2>&1
+            if [ $? -eq 0 ]; then
+              echo "Successfully converted to PDF: $file"
+            else
+              echo "Error converting $file to PDF. Check conversion.log for details."
+              exit 1
+            fi
+          fi
+        done
+    sources:
+      - "*.pptx"
+    generates:
+      - "*.pdf"
+
+  analyze:
+    desc: Analyze PowerPoint template and show results
+    cmds:
+      - python3 scripts/analyze_template.py analyze {{.TEMPLATE_PATH}}
+
+  analyze:save:
+    desc: Analyze template and save configuration
+    cmds:
+      - python3 scripts/analyze_template.py analyze {{.TEMPLATE_PATH}} {{.CONFIG_PATH}}
+
+  analyze:load:
+    desc: Load and display template configuration
+    cmds:
+      - python3 scripts/analyze_template.py load {{.CONFIG_PATH}}
+
+  template:check:
+    desc: Check if template exists
+    cmds:
+      - |
+        if [ ! -f "{{.TEMPLATE_PATH}}" ]; then
+          echo "Error: Template not found at {{.TEMPLATE_PATH}}."
+          echo "Please ensure the USD PowerPoint template is in the correct location."
+          exit 1
+        fi
+        echo "Template found at {{.TEMPLATE_PATH}}."
+
+  watch:
+    desc: Watch for changes and rebuild
+    deps: [install-watch-deps]
+    cmds:
+      - |
+        echo "Watching for changes in scripts/ and content/ directories..."
+        while true; do
+          task build convert
+          inotifywait -q -e modify -e create -e delete scripts/* content/**/*
+        done
+
+  install-watch-deps:
+    desc: Install inotify-tools for watch functionality
+    cmds:
+      - |
+        if ! command -v inotifywait >/dev/null 2>&1; then
+          echo "inotifywait not found. Installing inotify-tools..."
+          sudo apt-get update
+          sudo apt-get install -y inotify-tools
+        else
+          echo "inotifywait is already installed."
+        fi
+    silent: true
+
+  clean:
+    desc: Clean generated files but keep directories
+    cmds:
+      - |
+        rm -f *.pptx *.pdf conversion.log {{.CONFIG_PATH}}
+        echo "Cleaned generated files."
+    silent: true
+
+  clean:all:
+    desc: Clean all generated files and directories
+    cmds:
+      - task: clean
+      - rm -rf assets/templates
+      - echo "Cleaned all files and directories."
+    silent: true
+
+  status:
+    desc: Check status of files and template
+    cmds:
+      - task: template:check
+      - |
+        echo ""
+        echo "Checking file statuses..."
+
+        if [ -f {{.CONFIG_PATH}} ]; then
+          echo "Template configuration exists."
+        else
+          echo "Template configuration is missing."
+        fi
+
+        if [ -f conversion.log ]; then
+          echo "Conversion log exists."
+        else
+          echo "Conversion log is missing."
+        fi
+
+        if compgen -G "*.pptx" > /dev/null; then
+          echo "Presentations found:"
+          ls -1 *.pptx
+        else
+          echo "No presentations found."
+        fi
+
+        if compgen -G "*.pdf" > /dev/null; then
+          echo "PDF files found:"
+          ls -1 *.pdf
+        else
+          echo "No PDF files found."
+        fi
+
+  combine:
+    desc: Run combine command
+    cmds:
+      - python3 combine.py
+    silent: true
+
+  update:task:
+    desc: Update Task binary
+    cmds:
+      - echo "Updating Task binary..."
+      - curl -sL https://taskfile.dev/install.sh | sh
+      - rm -f "$HOME/.local/bin/task"
+      - cp ./bin/task "$HOME/.local/bin/task"
+      - mkdir -p "$HOME/bin"
+      - rm -f "$HOME/bin/task"
+      - ln -sf "$HOME/.local/bin/task" "$HOME/bin/task"
+      - echo "Task binary updated."
