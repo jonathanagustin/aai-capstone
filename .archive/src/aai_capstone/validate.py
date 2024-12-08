@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# src/aai_capstone/validate.py
 from __future__ import annotations
 
 import os
@@ -14,11 +15,13 @@ init()
 
 @dataclass
 class ValidationError:
+    """Data class for content validation errors."""
     file: str
     message: str
     detail: str = ""
 
 class ContentValidator:
+    """Validate the YAML content files against required structure."""
     REQUIRED_SLIDE_TYPES = {'section', 'content', 'comparison'}
 
     def __init__(self):
@@ -50,15 +53,16 @@ class ContentValidator:
             return
 
         # Validate slide type
-        if slide['type'] not in self.REQUIRED_SLIDE_TYPES:
+        slide_type = slide['type']
+        if slide_type not in self.REQUIRED_SLIDE_TYPES:
             self.errors.append(ValidationError(
                 filename,
-                f"Invalid slide type in slide {slide_index}: {slide['type']}",
+                f"Invalid slide type in slide {slide_index}: {slide_type}",
                 f"Allowed types: {', '.join(self.REQUIRED_SLIDE_TYPES)}"
             ))
 
         # Type-specific validation
-        if slide['type'] == 'content':
+        if slide_type == 'content':
             if 'content' not in slide:
                 self.errors.append(ValidationError(
                     filename,
@@ -71,7 +75,7 @@ class ContentValidator:
                     f"Found type: {type(slide['content'])}"
                 ))
 
-        elif slide['type'] == 'comparison':
+        elif slide_type == 'comparison':
             for field in ['left_content', 'right_content']:
                 if field not in slide:
                     self.errors.append(ValidationError(
@@ -86,7 +90,7 @@ class ContentValidator:
                     ))
 
     def validate_file(self, filepath: str) -> None:
-        """Validate a single YAML file."""
+        """Validate a single YAML content file."""
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = yaml.safe_load(f)
@@ -139,7 +143,7 @@ class ContentValidator:
             ))
 
     def print_results(self) -> None:
-        """Print validation results with color coding."""
+        """Print validation results, using colors for emphasis."""
         if not self.errors:
             print(f"{Fore.GREEN}✓ All content files are valid{Style.RESET_ALL}")
             return
@@ -157,6 +161,7 @@ class ContentValidator:
                 print(f"    {error.detail}")
 
 def main() -> int:
+    """Main function to validate all YAML content files in the 'content' directory."""
     validator = ContentValidator()
     content_dir = Path("content")
 

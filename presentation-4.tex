@@ -1,0 +1,205 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+
+% Metropolis adjustments
+\metroset{progressbar=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{minted}
+\usemintedstyle{friendly}
+\usepackage{menukeys}
+
+\title{Deployment Automation with MLOps Practices \& Ethical Deployment}
+\subtitle{AI Masters Capstone Project - Presentation 4}
+\author{Jonathan Agustin}
+\date{November 2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Welcome back. We’ve tackled data ethics, automated training, and fair model development. Now, let’s focus on the final mile: deploying our models into real-world environments.
+%
+% Deployment isn’t a simple “flip the switch” moment—it’s a delicate orchestration of infrastructure, continuous integration, testing, security, compliance, and ongoing oversight. MLOps practices ensure our carefully built models consistently deliver value to users while respecting ethical and legal frameworks.
+%
+% In this presentation, we’ll embrace deployment automation, MLOps best practices, and ethical deployment principles. By doing so, we guarantee that all our previous hard work—on fair data, responsible training, and transparent models—reaches users safely, securely, and for the long term.
+%%% VOICEOVER OFF
+\maketitle
+
+%------------------------------------------------------------
+% Overview Slide
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Here’s the plan:
+%
+% 1. Continuous Integration/Continuous Deployment (CI/CD): We’ll see how automation (e.g., GitHub Actions) ensures seamless updates and reduces manual errors.
+% 2. Infrastructure Automation: Using Terraform and Docker for scalable, reproducible environments.
+% 3. Ethical Deployment: Incorporate compliance checks, SBOM creation, security scanning, and privacy safeguards into your release pipelines.
+% 4. Putting it all together: A holistic MLOps strategy ensuring your ML pipeline runs smoothly, ethically, and reliably in production.
+%
+% Let’s dive into the nuts and bolts of ethical ML deployment.
+%%% VOICEOVER OFF
+\begin{frame}{What We’ll Cover Today}
+\begin{itemize}
+\item CI/CD pipeline integration for streamlined updates
+\item Infrastructure automation with Terraform, Docker, and AWS
+\item Ethical deployment: security, compliance, SBOMs, privacy considerations
+\item A holistic MLOps approach linking all pipeline stages
+\end{itemize}
+
+\vspace{0.8em}
+\emph{From code to customers, we’ll ensure ethical, secure, and scalable model delivery.}
+\end{frame}
+
+%------------------------------------------------------------
+% CI/CD Pipeline Integration
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Gone are the days of manual deployments that lead to confusion and downtimes. CI/CD pipelines continuously integrate new code, run automated tests, and if all checks pass, deploy updates seamlessly.
+%
+% Tools like GitHub Actions orchestrate these steps automatically. Whenever you push a change, tests run, security scans occur, and deployments follow suit. This consistency builds confidence and lets your team move faster without sacrificing quality.
+%
+% CI/CD isn’t just a technical convenience—it’s about delivering value to users rapidly, ensuring that improvements and ethical safeguards reach production as soon as they’re ready.
+%%% VOICEOVER OFF
+\begin{frame}{CI/CD Pipeline Integration}
+\begin{itemize}
+\item Automate code integration, testing, and deployment with GitHub Actions
+\item Trigger pipelines on commits or pull requests, ensuring continuous feedback
+\item Rapid, reliable releases that keep models current and aligned with ethical standards
+\end{itemize}
+
+\vspace{0.8em}
+\emph{CI/CD brings agility and trustworthiness, reducing risk and manual effort.}
+
+% [OPTIONAL IMAGE HERE: GitHub Actions workflow diagram]
+\end{frame}
+
+%------------------------------------------------------------
+% Infrastructure Automation
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Deploying ML models isn’t just about the model files—it’s about servers, containers, load balancers, databases, and more. Infrastructure automation tools like Terraform let you define infrastructure as code. This ensures your environments are consistent, repeatable, and scalable.
+%
+% Docker containers package your model with its dependencies, guaranteeing it runs identically from dev to production. Terraform provisions AWS resources effortlessly, while Hugging Face Spaces can host user-friendly model interfaces.
+%
+% By automating infrastructure, we eliminate config drift, speed up scaling, and maintain a predictable environment for our ethical ML solutions.
+%%% VOICEOVER OFF
+\begin{frame}{Infrastructure Automation}
+\begin{itemize}
+\item Use Terraform for Infrastructure as Code: reproducible, version-controlled setups
+\item Docker for containerization: consistent runtime environments
+\item AWS integration: scalable, secure cloud deployments with minimal friction
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Infrastructure automation ensures stable foundations for reliable and ethical ML services.}
+
+% [OPTIONAL IMAGE HERE: Terraform + Docker + AWS icons together]
+\end{frame}
+
+%------------------------------------------------------------
+% Ethical Deployment Considerations
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Deployment isn’t just about functionality—it’s about doing the right thing. Ethical deployment means embedding security, compliance, and privacy checks into your pipeline.
+%
+% Security scanning tools detect vulnerabilities before models hit production. Attestation processes verify component integrity. Software Bill of Materials (SBOM) lists every dependency, boosting transparency and trust.
+%
+% Compliance checks ensure adherence to laws and industry standards. Privacy safeguards protect user data throughout deployment and operations. By integrating these steps, we ensure our model deployments uphold ethical and legal expectations.
+%%% VOICEOVER OFF
+\begin{frame}{Ethical Deployment: Security \& Compliance}
+\begin{itemize}
+\item Automated security scans identify vulnerabilities early
+\item SBOM creation ensures transparency of all components \& dependencies
+\item Compliance checks enforce privacy laws (e.g., GDPR) and industry regulations
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Ethical deployment safeguards trust, protects user rights, and prevents damaging missteps.}
+
+% [OPTIONAL IMAGE HERE: Shield icon or SBOM diagram]
+\end{frame}
+
+%------------------------------------------------------------
+% Integrating with MLOps Practices
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% MLOps unites everything we’ve learned so far: from ethical data handling, automated training, and fair models to seamless deployment automation and compliance.
+%
+% A well-designed MLOps pipeline:
+% - Continuously monitors model performance, fairness metrics, and security health
+% - Rolls out updates incrementally, reducing risk
+% - Logs everything for auditability and accountability
+%
+% By marrying technical reliability with ethical oversight, MLOps ensures our ML pipeline isn’t just a one-time achievement—it’s a living, evolving system that remains trustworthy and beneficial over time.
+%%% VOICEOVER OFF
+\begin{frame}{A Holistic MLOps Strategy}
+\begin{itemize}
+\item Continuous monitoring: track model drift, fairness shifts, and performance drops
+\item Incremental updates: roll out changes gradually, gathering feedback safely
+\item Comprehensive documentation and audits: maintain transparency, accountability
+\end{itemize}
+
+\vspace{0.8em}
+\emph{MLOps weaves ethics into the fabric of operations, ensuring long-term trust and value.}
+\end{frame}
+
+%------------------------------------------------------------
+% Conclusion & Next Steps
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% We’ve explored how deployment automation, MLOps practices, and ethical considerations ensure your carefully built models reach users securely, reliably, and fairly.
+%
+% Next, we’ll address code quality, security, and the broader ethical implications in ML development. By rounding out these aspects, we ensure that every line of code and every deployment decision respects both technical excellence and human values.
+%
+% Together, these steps ensure that the ML solutions we bring to production embody innovation, integrity, and positive social impact.
+%%% VOICEOVER OFF
+\begin{frame}{Next Steps}
+\begin{itemize}
+\item Next Presentation: Code Quality, Security \& Ethical Implications in ML Development
+\item Strengthening the final layer of assurance and responsibility
+\end{itemize}
+
+\vspace{0.8em}
+\emph{With our pipeline set, let’s refine quality, security, and ethical codes for truly responsible AI.}
+\end{frame}
+
+\end{document}

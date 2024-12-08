@@ -1,0 +1,12 @@
+\frametitle{Taskfile Example}
+version: '3'
+tasks:
+  build:
+    desc: Build the project
+    cmds:
+      - pip install -r requirements.txt
+  test:
+    desc: Run tests
+    deps: [build]
+    cmds:
+      - pytest tests/

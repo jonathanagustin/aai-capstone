@@ -1,0 +1,377 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts with T1 encoding
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+
+% Metropolis adjustments
+\metroset{progressbar=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black, bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{menukeys}
+\usepackage{minted}
+
+% Title and metadata
+\title{Developer Life Hacks}
+\subtitle{Hidden Features, Pro Tips, and Time-Saving Tricks}
+\author{Jonathan Agustin}
+\date{\today}
+
+% Video filenames
+\newcommand{\VideoGitHub}{video_github.mp4}
+\newcommand{\VideoVSCode}{video_vscode.mp4}
+\newcommand{\VideoCopilot}{video_copilot.mp4}
+\newcommand{\VideoDirenv}{video_direnv.mp4}
+\newcommand{\VideoTask}{video_task.mp4}
+\newcommand{\VideoPrecommit}{video_precommit.mp4}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide (VO ~45s)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Before we dive into our machine learning pipeline presentations, let’s take a step back. The real challenge often isn’t building the model—it’s handling all those little tasks around coding, reviewing, deploying, and maintaining your code. This video is all about developer experience—or DX—and the tricks and tools that can save you hours of work, reduce frustration, and help you code smarter, not harder.
+%%% VOICEOVER OFF
+\maketitle
+
+%------------------------------------------------------------
+% GitHub Slides (VO ~45s)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Let’s start with where your code often lives: GitHub. Most people use GitHub daily but miss out on some hidden gems.
+%
+% First trick: While viewing any file in a GitHub repo, press the period key (.). Instantly, GitHub transforms into a lightweight web-based editor. Perfect for quick edits or code reviews—no need to clone locally just to tweak a line or fix a comment.
+%
+% For more powerful operations, try the GitHub CLI, gh. With gh you can create pull requests, view issues, and merge PRs right from your terminal. For example, gh pr create walks you through opening a new pull request without leaving your coding environment. This keeps you in the zone, saving precious context-switching time.
+%%% VOICEOVER OFF
+\begin{frame}{GitHub Hacks}
+\begin{itemize}
+\item Press \keys{.} for instant web editor
+\item Use GitHub CLI \keys{gh} for PRs/issues/merges in terminal
+\item Minimal context switching, improved flow
+\end{itemize}
+\vspace{0.3em}  % Reduced from 0.5em
+\end{frame}
+
+% GitHub Video (VO ~30s)
+%%% VOICEOVER ON
+% For more powerful operations, try the GitHub CLI, gh. With gh you can create pull requests, view issues, and merge PRs right from your terminal. For example, gh pr create walks you through opening a new pull request without leaving your coding environment. This keeps you in the zone, saving precious context-switching time.
+%%% VOICEOVER OFF
+\begin{frame}{GitHub Demo}
+\centering
+\IfFileExists{\VideoGitHub}{%
+\includemedia[
+  width=0.6\linewidth,
+  height=0.3375\linewidth,
+  activate=pageopen,
+  addresource=\VideoGitHub,
+  flashvars={
+    source=\VideoGitHub&autoPlay=true&loop=false
+  }
+]{}{StrobeMediaPlayback.swf}%
+}{%
+\fbox{\parbox{0.6\linewidth}{\centering No video available}}
+}
+\end{frame}
+
+%------------------------------------------------------------
+% VS Code Slides (VO ~45s)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Next up: your primary coding environment.
+
+% Visual Studio Code is widely adopted in the industry, especially for Python and ML work. Let’s power it up with some shortcuts and features.
+
+% CTRL+X: Delete a line instantly—no selection needed.
+
+% CTRL+/: Comment or uncomment lines in one keystroke.
+
+% CTRL+SHIFT+P: Opens the command palette—your gateway to any VS Code feature.
+
+% CTRL+P: Jump to any file by typing a few letters.
+
+% Multiple cursors: Hold ALT+Click to place multiple cursors and edit multiple places at once, perfect for renaming variables or adjusting repetitive lines.
+
+% Mastering these shortcuts means less time navigating and more time coding.
+%%% VOICEOVER OFF
+\begin{frame}{VS Code Essentials}
+\begin{itemize}
+\item \keys{Ctrl+X}: Delete line
+\item \keys{Ctrl+/}: Toggle comments
+\item \keys{Ctrl+Shift+P}: Command palette
+\item \keys{Ctrl+P}: Quick file navigation
+\item \keys{Alt+Click}: Multiple cursors
+\end{itemize}
+\end{frame}
+
+% VS Code Video (VO ~45s)
+%%% VOICEOVER ON
+% Let's watch a demonstration of these VS Code shortcuts.
+% Notice how using these key combinations can make coding more efficient by reducing the time spent on common tasks like deleting lines, commenting code, navigating files, and editing multiple lines at once.
+%%% VOICEOVER OFF
+\begin{frame}{VS Code Demo}
+\centering
+\IfFileExists{\VideoVSCode}{%
+\includemedia[
+  width=0.6\linewidth,
+  height=0.3375\linewidth,
+  activate=pageopen,
+  addresource=\VideoVSCode,
+  flashvars={
+    source=\VideoVSCode&autoPlay=true&loop=false
+  }
+]{}{StrobeMediaPlayback.swf}%
+}{%
+\fbox{\parbox{0.6\linewidth}{\centering No video available}}
+}
+\end{frame}
+
+%------------------------------------------------------------
+% Copilot Slides (VO ~30s)
+%%% VOICEOVER ON
+% Developer Experience has reached a new frontier: AI-assisted coding. GitHub Copilot suggests code completions and can even transform code snippets with natural language requests.
+%
+% Use CTRL+I (Copilot Edit) to highlight a block of code and describe what you want in plain English—'add error handling' or 'use a list comprehension'—and watch Copilot refactor your code. This elevates you from mechanical typing to architectural thinking.
+%%% VOICEOVER OFF
+\begin{frame}{AI Assistance with Copilot}
+\begin{itemize}
+\item Copilot: AI code suggestions
+\item \keys{Ctrl+I}: Natural language refactoring
+\item Less grunt work, more architecture
+\end{itemize}
+\end{frame}
+
+% Copilot Video (VO ~30s)
+%%% VOICEOVER ON
+% Here's a demo of Copilot in action.
+% We'll see how it suggests code completions and refactors code based on simple natural language commands, streamlining the coding process.
+%%% VOICEOVER OFF
+\begin{frame}{Copilot Demo}
+\centering
+\IfFileExists{\VideoCopilot}{%
+\includemedia[
+  width=0.6\linewidth,
+  height=0.3375\linewidth,
+  activate=pageopen,
+  addresource=\VideoCopilot,
+  flashvars={
+    source=\VideoCopilot&autoPlay=true&loop=false
+  }
+]{}{StrobeMediaPlayback.swf}%
+}{%
+\fbox{\parbox{0.6\linewidth}{\centering No video available}}
+}
+\end{frame}
+
+%------------------------------------------------------------
+% Environment & direnv Slides (VO ~40s)
+%%% VOICEOVER ON
+% Smooth development depends on stable, isolated environments. Tools like pyenv, conda, or pipx let you juggle multiple Python versions and dependencies easily. For ML projects, this prevents 'works on my machine' issues.
+%
+% Want to load environment variables automatically per project? Use direnv. Put environment variables in .envrc, and when you cd into your project directory, direnv loads them automatically. No more manual export commands.
+%%% VOICEOVER OFF
+\begin{frame}{Environment Management}
+\begin{itemize}
+\item pyenv/conda/pipx: Manage Python versions/deps
+\item direnv: Auto-load environment variables per project
+\item Consistent, reliable setups
+\end{itemize}
+\end{frame}
+
+% direnv Video (VO ~30s)
+%%% VOICEOVER ON
+% Let's see how direnv works.
+% In this demo, we'll navigate to a project directory and watch as direnv automatically loads environment variables, activating the correct Python version and dependencies seamlessly.
+%%% VOICEOVER OFF
+\begin{frame}{Environment/direnv Demo (30s)}
+\centering
+\IfFileExists{\VideoDirenv}{%
+\includemedia[
+  width=0.6\linewidth,
+  height=0.3375\linewidth,
+  activate=pageopen,
+  addresource=\VideoDirenv,
+  flashvars={
+    source=\VideoDirenv&autoPlay=true&loop=false
+  }
+]{}{StrobeMediaPlayback.swf}%
+}{%
+\fbox{\parbox{0.6\linewidth}{\centering No video available}}
+}
+\end{frame}
+
+%------------------------------------------------------------
+% Task & Taskfile Slides (VO ~45s)
+%%% VOICEOVER ON
+% Now let’s automate repetitive steps. Meet Task, a modern alternative to Make. Instead of wrestling with tabs and arcane syntax, you define tasks in Taskfile.yml using YAML. Tasks can depend on each other—run task train and if setup is required, it runs automatically.
+%
+% This standardizes your workflow: task setup, task test, task lint, task deploy—all in one place. Combine it with a bootstrap script that installs Task on any OS, and you have a frictionless environment setup.
+%%% VOICEOVER OFF
+\begin{frame}{Task \& Taskfile}
+\begin{itemize}
+\item Taskfile.yml: YAML-based tasks
+\item Dependencies for seamless workflows
+\item One-stop commands for build/test/deploy
+\end{itemize}
+\end{frame}
+
+%%% VOICEOVER ON
+% Here's an example of a Taskfile.yml.
+% We define a 'build' task that installs requirements and a 'test' task that runs after 'build'.
+% This setup ensures tasks run in the correct order and simplifies complex command sequences.
+%%% VOICEOVER OFF
+\begin{frame}[fragile]{Taskfile Example}
+version: '3'
+tasks:
+  build:
+    desc: Build the project
+    cmds:
+      - pip install -r requirements.txt
+  test:
+    desc: Run tests
+    deps: [build]
+    cmds:
+      - pytest tests/
+\end{frame}
+
+% Task Video (VO ~30-45s)
+%%% VOICEOVER ON
+% Let's watch a demo of using Task and Taskfile.yml.
+% We'll run predefined tasks that automate building and testing the project, showing how this tool simplifies workflow management.
+%%% VOICEOVER OFF
+\begin{frame}{Task Demo}
+\centering
+\IfFileExists{\VideoTask}{%
+\includemedia[
+  width=0.6\linewidth,
+  height=0.3375\linewidth,
+  activate=pageopen,
+  addresource=\VideoTask,
+  flashvars={
+    source=\VideoTask&autoPlay=true&loop=false
+  }
+]{}{StrobeMediaPlayback.swf}%
+}{%
+\fbox{\parbox{0.6\linewidth}{\centering No video available}}
+}
+\end{frame}
+
+%------------------------------------------------------------
+% Code Quality & pre-commit (VO ~45s)
+%%% VOICEOVER ON
+% Clean, consistent code matters. Use Black for formatting and Flake8 for linting to keep code style and quality in check. Integrate pre-commit hooks so every git commit triggers these checks automatically. If something’s off, the commit is stopped until fixed, ensuring quality stays high from day one.
+%
+% This isn’t just about aesthetics—it’s about reliability, maintainability, and ethics. Secure, readable code reduces risks and fosters trust.
+%%% VOICEOVER OFF
+\begin{frame}{Code Quality Automation}
+\begin{itemize}
+\item Black \& Flake8: style \& lint checks
+\item pre-commit hooks: checks at commit time
+\item High standards from the start
+\end{itemize}
+\end{frame}
+
+% pre-commit Video (VO ~30s)
+%%% VOICEOVER ON
+% In this demo, we'll see pre-commit hooks in action.
+% When we try to commit code that doesn't meet style guidelines, the hooks prevent the commit and provide feedback, allowing us to fix issues before they become part of the codebase.
+%%% VOICEOVER OFF
+\begin{frame}{Code Quality Demo}
+\centering
+\IfFileExists{\VideoPrecommit}{%
+\includemedia[
+  width=0.6\linewidth,
+  height=0.3375\linewidth,
+  activate=pageopen,
+  addresource=\VideoPrecommit,
+  flashvars={
+    source=\VideoPrecommit&autoPlay=true&loop=false
+  }
+]{}{StrobeMediaPlayback.swf}%
+}{%
+\fbox{\parbox{0.6\linewidth}{\centering No video available}}
+}
+\end{frame}
+
+%------------------------------------------------------------
+% New Slide
+%------------------------------------------------------------
+\begin{frame}{New Slide Title}
+\begin{itemize}
+\item New point 1
+\item New point 2
+\item New point 3
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Wrap-Up (VO ~45s)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% With these hacks—GitHub tricks for quick edits, VS Code shortcuts for effortless navigation, Copilot for AI-driven refactoring, environment managers to keep dependencies in check, Task for workflow automation, and pre-commit hooks for code quality—you’ve got a powerful toolkit.
+%
+% These tools free you from the drudgery of setup and repetitive tasks, letting you focus on building robust solutions. Master these now, and you’ll find the upcoming ML pipeline sessions much smoother. Let’s put these capabilities to use as we build and deploy real machine learning projects.
+%%% VOICEOVER OFF
+\begin{frame}{Your DX Superpowers}
+\begin{itemize}
+  \item GitHub \& GH CLI
+  \item VS Code \& Copilot
+  \item pyenv/conda/pipx \& direnv
+  \item Task \& pre-commit
+\end{itemize}
+\vspace{-1em}  % Adjusted spacing to fix Overfull \vbox
+\end{frame}
+
+%------------------------------------------------------------
+% Resources (brief ~20s)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% For more information, here are some resources to help you get started.
+% The official documentation for GitHub CLI, VS Code keybindings, and GitHub Copilot provide in-depth guides.
+% Additionally, check out the docs for pyenv, conda, pipx, direnv, Task, and pre-commit to explore these tools further.
+% In the next sessions, as we tackle automation, data preparation, model training, and deployment, you’ll have the edge these hacks provide. Let’s get started on making ML pipelines not just possible, but practical and efficient.
+%%% VOICEOVER OFF
+\begin{frame}{Resources \& Next Steps}
+\begin{itemize}
+\item GitHub Docs (gh CLI)
+\item VS Code official docs (keybindings)
+\item GitHub Copilot info
+\item pyenv/conda/pipx/direnv docs
+\item Task \& pre-commit documentation
+\end{itemize}\label{lastpage}
+\end{frame}
+\end{document}

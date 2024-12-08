@@ -1,0 +1,252 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+
+% Metropolis adjustments
+\metroset{progressbar=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{minted}
+\usemintedstyle{friendly}
+\usepackage{menukeys}
+
+\title{Automating Model Training \& Ensuring Ethical Model Development}
+\subtitle{AI Masters Capstone Project - Presentation 3}
+\author{Jonathan Agustin}
+\date{November 2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Welcome back. Previously, we laid the groundwork with ethical data handling and a robust approach to preprocessing. Now, let’s take the next step: automating model training and ensuring that each model we build respects human values.
+%
+% Model training shouldn’t be a tedious, manual process. By automating training and hyperparameter tuning, we free ourselves from grunt work. But automation alone isn’t enough—we must also ensure transparency, explainability, and fairness at the model level.
+%
+% In this presentation, we’ll see how to integrate these ethical considerations into model development, from versioning and experiment tracking to building interpretable and equitable models. Let’s dive in.
+%%% VOICEOVER OFF
+\maketitle
+
+%------------------------------------------------------------
+% Overview Slide
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Here’s our agenda:
+%
+% 1. We’ll explore how to automate model training, reducing manual chores and enabling efficient hyperparameter optimization.
+% 2. We’ll discuss model versioning and experiment tracking, ensuring reproducibility and trustworthiness in our workflow.
+% 3. We’ll tackle model transparency and explainability, seeing how to make complex models understandable.
+% 4. We’ll address the crucial topic of fairness in model outcomes, ensuring that our ML solutions treat all user groups equitably.
+%
+% By the end, you’ll know how to craft ML models that are not only powerful and efficient, but also responsible and worthy of user trust.
+%%% VOICEOVER OFF
+\begin{frame}{What We’ll Cover Today}
+\begin{itemize}
+\item Automating model training: efficient pipelines, hyperparameter optimization
+\item Model versioning \& experiment tracking: ensuring reproducibility
+\item Transparent \& explainable AI: building user trust
+\item Fairness in AI models: evaluating \& mitigating biases
+\end{itemize}
+
+\vspace{0.8em}
+\emph{From raw code to final model deployments, ethics and efficiency guide our steps.}
+\end{frame}
+
+%------------------------------------------------------------
+% Automating Model Training Intro
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Manual model training can feel like a never-ending cycle—tweak a parameter, run a script, wait, repeat. Let’s break that cycle with automation.
+%
+% Automated training pipelines run experiments, adjust hyperparameters, and track results systematically. This leads to more consistent, data-driven improvements rather than guesswork.
+%
+% With automation, data scientists focus on strategic decisions, not repetitive trials, accelerating innovation while maintaining reliable, repeatable processes.
+%%% VOICEOVER OFF
+\begin{frame}{Automating Model Training}
+\begin{itemize}
+\item Reduce manual iteration: automate data loading, training, validation steps
+\item Integrate hyperparameter search methods (grid, random, Bayesian) seamlessly
+\item Create reproducible pipelines that encourage systematic improvement
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Automation frees us to concentrate on meaningful insights and better outcomes.}
+
+% [OPTIONAL IMAGE HERE: Pipeline icon representing automated training steps]
+\end{frame}
+
+%------------------------------------------------------------
+% Hyperparameter Optimization
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Hyperparameters—learning rates, regularization strengths, network depths—can make or break model performance. Finding the right combination by hand is tedious.
+%
+% Automated hyperparameter optimization (HPO) tools explore the search space smartly. Bayesian optimization, for example, learns from previous trials to propose better settings over time.
+%
+% By automating HPO, we find better models faster, with less guesswork and a clear log of what we tried and why.
+%%% VOICEOVER OFF
+\begin{frame}{Hyperparameter Optimization}
+\begin{itemize}
+\item Use automated search strategies (Bayesian, genetic algorithms) to tune hyperparams
+\item Track performance at each trial, building knowledge over time
+\item Achieve superior models with fewer manual experiments
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Smart HPO transforms trial-and-error into a guided search for excellence.}
+
+% [OPTIONAL IMAGE HERE: Optimization curve or grid search illustration]
+\end{frame}
+
+%------------------------------------------------------------
+% Model Versioning & Experiment Tracking
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Without careful versioning and tracking, ML experimentation can become a chaotic mess: Which model did we train last Tuesday? Which hyperparameters produced that promising result?
+%
+% Versioning tools (like Git or dedicated ML experiment trackers) ensure every code change, every parameter tweak, and every dataset variant is recorded. Experiment tracking platforms (e.g., MLflow) let us log metrics, compare runs, and revisit past experiments easily.
+%
+% This reproducibility builds trust. If we find biases later, we can trace back to a specific training run and understand what happened.
+%%% VOICEOVER OFF
+\begin{frame}{Model Versioning \& Experiment Tracking}
+\begin{itemize}
+\item Tag each model, dataset, and parameter set for easy reference
+\item Log metrics, outcomes, and conditions for every run (e.g., MLflow)
+\item Instantly reproduce past experiments, fostering accountability and trust
+\end{itemize}
+
+\vspace{0.8em}
+\emph{A well-documented history of experimentation ensures transparency and continual learning.}
+
+% [OPTIONAL IMAGE HERE: Version control branching diagram or MLflow UI snapshot]
+\end{frame}
+
+%------------------------------------------------------------
+% Transparent & Explainable AI
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% As models grow complex (deep networks, ensembles), their decision-making can become a black box. How do we trust something we can’t understand?
+%
+% Explainability techniques like SHAP and LIME generate insights into which features drive predictions. Transparency tools can highlight how a model treats different inputs, ensuring no hidden agendas lurk inside.
+%
+% By making models interpretable, we empower stakeholders—users, regulators, and ourselves—to trust and adopt ML solutions confidently. When people understand “why,” they’re more likely to accept “what.”
+%%% VOICEOVER OFF
+\begin{frame}{Transparent \& Explainable AI}
+\begin{itemize}
+\item Apply tools like SHAP, LIME to clarify model decisions
+\item Visualize feature importances \& decision pathways
+\item Enhance stakeholder trust by revealing the reasoning behind predictions
+\end{itemize}
+
+\vspace{0.8em}
+\emph{When ML decisions are understandable, we foster trust, alignment, and responsible use.}
+
+% [OPTIONAL IMAGE HERE: Model explanation graphs or SHAP value plot]
+\end{frame}
+
+%------------------------------------------------------------
+% Fairness in AI Models
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Even an expertly trained model can be unfair if trained on biased data or if it treats certain groups differently. We must measure and ensure fairness, not just accuracy.
+%
+% Evaluate outcomes across demographic groups, check parity, and run specialized fairness metrics. If disparities appear, consider techniques like re-weighting data, adjusting model constraints, or post-processing predictions.
+%
+% Fairness audits help identify and correct biases before models harm users. Building fair models isn’t just an ideal—it’s a social responsibility.
+%%% VOICEOVER OFF
+\begin{frame}{Fairness in AI Models}
+\begin{itemize}
+\item Check metrics like demographic parity, equality of odds for different groups
+\item Apply interventions (re-sampling, constraints) to reduce unfair outcomes
+\item Continuously monitor fairness, ensuring changes don’t reintroduce bias
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Fair models reflect our commitment to justice, equity, and ethical innovation.}
+
+% [OPTIONAL IMAGE HERE: Balanced scale comparing two sets of model predictions]
+\end{frame}
+
+%------------------------------------------------------------
+% Integrating Ethics into Training
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% We’ve learned how to automate training, track experiments, explain models, and ensure fairness. Now, let’s integrate all these pieces into one holistic approach.
+%
+% An ethical training pipeline:
+% - Automates model runs and hyperparameter tuning
+% - Logs every detail for accountability and reproducibility
+% - Applies explainability methods to demystify black-box decisions
+% - Enforces fairness metrics and interventions where needed
+%
+% This synergy creates models that are not only top-performers but also transparent, equitable, and principled.
+%%% VOICEOVER OFF
+\begin{frame}{A Holistic Model Development Approach}
+\begin{itemize}
+\item Combine automation, tracking, explainability, and fairness measures seamlessly
+\item Document the entire workflow, from preprocessing to final model
+\item Align performance with ethical principles for responsible ML innovation
+\end{itemize}
+
+\vspace{0.8em}
+\emph{The result: models you can trust, understand, and be proud to deploy.}
+\end{frame}
+
+%------------------------------------------------------------
+% Conclusion & Next Steps
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% We’ve advanced from data handling into the realm of automated, accountable, and ethically guided model training. Next, we’ll tackle deployment automation and ethical deployment practices, ensuring that our carefully built models reach users securely and responsibly.
+%
+% By integrating ethical and technical best practices into training, we set a strong precedent for the entire ML lifecycle. Ethical AI starts at data and continues through models, deployments, and beyond.
+%
+% Let’s move forward, keeping these values at our core.
+%%% VOICEOVER OFF
+\begin{frame}{Next Steps}
+\begin{itemize}
+\item Next Presentation: Deployment Automation \& Ethical Deployment
+\item Ensuring secure, compliant, user-centered model releases
+\end{itemize}
+
+\vspace{0.8em}
+\emph{From fair data to fair models, we’re shaping AI that serves humanity responsibly.}
+\end{frame}
+
+\end{document}

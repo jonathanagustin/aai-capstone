@@ -1,92 +1,90 @@
-# Taskfile.yml
 version: "3"
 
-vars:
-  TEMPLATE_PATH: assets/templates/template.pptx
-  CONFIG_PATH: config/template.yml
-
 tasks:
-  default:
-    desc: Run the complete workflow
+  help:
+    desc: "Show help information for tasks"
     cmds:
+      - task --list
+
+  default:
+    desc: "Run the complete workflow: install, setup, generate, flatten, convert"
+    cmds:
+      - task: install
       - task: setup
-      - task: analyze:save
-      - task: build
+      - task: generate
+      - task: flatten
       - task: convert
     silent: true
 
-  setup:
-    desc: Create necessary directories
+  install:
+    desc: "Install necessary packages"
     cmds:
-      - mkdir -p content
-      - mkdir -p assets/templates
-    status:
-      - test -d content
-      - test -d assets/templates
+      - sudo apt-get update
+      - sudo apt-get install -y ghostscript imagemagick latexmk
+      - sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-latex-recommended
+      - sudo apt-get install -y python3-pygments
 
-  install:deps:
-    desc: Install required dependencies
+  setup:
+    desc: "Create necessary directories if they do not exist"
+    cmds:
+      - mkdir -p output
+    status:
+      - test -d output
+
+  generate:
+    desc: "Generate presentation PDF using lualatex"
+    cmds:
+      - task: clean
+      - latexmk -f -shell-escape -pdf -lualatex -interaction=nonstopmode -output-directory=output presentation-*.tex presentation-extra.tex
+    sources:
+      - presentation-*.tex
+      - presentation-extra.tex
+    generates:
+      - output/presentation-*.pdf
+      - output/presentation-extra.pdf
+    status:
+      - test -f output/presentation-1.pdf
+
+  flatten:
+    desc: "Flatten the PDFs to remove interactive elements"
+    deps: [generate]
     cmds:
       - |
-        if ! command -v libreoffice >/dev/null 2>&1; then
-          echo "LibreOffice not found. Installing LibreOffice..."
-          sudo apt-get update
-          sudo apt-get install -y libreoffice-common libreoffice-writer
-        fi
-    silent: true
-
-  build:
-    desc: Build PowerPoint presentations from YAML content
-    deps: [setup]
-    cmds:
-      - python3 scripts/slide_creator.py
+        for f in output/presentation-*.pdf; do
+          [ -f "$f" ] && gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -dCompatibilityLevel=1.5 -sOutputFile="output/flattened_$(basename "$f")" "$f"
+        done
     sources:
-      - content/*.yml
-      - scripts/slide_creator.py
+      - output/presentation-*.pdf
     generates:
-      - "*.pptx"
-    silent: true
+      - output/flattened_presentation-*.pdf
 
   convert:
-    desc: Convert PPTX to PDF using LibreOffice
-    deps: [build]
+    desc: "Convert flattened presentation PDF pages to PNG images"
+    deps: [flatten]
     cmds:
-      - ./scripts/pptx2pdf.sh
+      - mkdir -p output
+      - |
+          for f in output/flattened_presentation-*.pdf; do
+            [ -f "$f" ] && convert -density 300 -quality 100 "$f" "output/$(basename "${f/.pdf}")-slide.png"
+          done
     sources:
-      - "*.pptx"
+      - output/flattened_presentation-*.pdf
     generates:
-      - "*.pdf"
-
-  analyze:
-    desc: Analyze PowerPoint template
-    cmds:
-      - python3 scripts/analyze_template.py analyze {{.TEMPLATE_PATH}} {{.CONFIG_PATH}}
-
-  validate:
-      desc: Validate YAML content files
-      cmds:
-        - python3 scripts/validate_content.py
+      - output/flattened_presentation-*-slide-*.png
 
   clean:
-    desc: Clean generated files
+    desc: "Clean auxiliary files"
     cmds:
-      - rm -f *.pptx *.pdf
-    silent: true
+      - rm -rf output
+      - rm -f presentation-*.pyg || true
+      - |
+        for f in presentation-*.tex; do
+          ([ -f "$f" ] && latexmk -c -outdir=output "$f") > /dev/null
+        done
+      - rm -rf output || true
 
-  combine:
-    desc: Run combine command
+  status:
+    desc: "Show generated files"
+    silent: false
     cmds:
-      - python3 combine.py
-    silent: true
-
-  update:task:
-    desc: Update Task binary
-    cmds:
-      - echo "Updating Task binary..."
-      - curl -sL https://taskfile.dev/install.sh | sh
-      - rm -f "$HOME/.local/bin/task"
-      - cp ./bin/task "$HOME/.local/bin/task"
-      - mkdir -p "$HOME/bin"
-      - rm -f "$HOME/bin/task"
-      - ln -sf "$HOME/.local/bin/task" "$HOME/bin/task"
-      - echo "Task binary updated."
+      - ls -l output || echo "No output directory or files yet."

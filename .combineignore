@@ -1,4 +1,5 @@
 __pycache__/
+_minted-presentation/
 .archive/
 .bundle/
 .cache/
@@ -78,7 +79,6 @@ __pycache__/
 *.pptx
 *.pyc
 *.rar
-*.sh
 *.so
 *.sqlite
 *.stl
@@ -132,6 +132,12 @@ package-lock.json
 packages/
 Pipfile.lock
 poetry.lock
+presentation.nav
+presentation.pdf
+presentation.pyg
+presentation.snm
+presentation.synctex.gz
+presentation.vrb
 public/audio/
 pyproject.toml
 SECURITY.md
