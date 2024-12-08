@@ -56,13 +56,15 @@
 % Title Slide
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Welcome back. In our first presentation, we explored the bigger picture—building automated ML pipelines with ethical foundations. Now, let’s go deeper into the heart of any ML workflow: the data.
+% Welcome back to our deep dive into building ethical and automated ML pipelines.
+% In our first presentation, we explored the overarching framework of automation and ethics in ML.
+% Now, we move to the heart of an ML workflow: the data itself.
 %
-% Data is the raw material that fuels machine learning. But it’s not just about quantity or even quality; it’s about handling data ethically, ensuring fairness, respecting privacy, and preventing biases from creeping in at the earliest stages.
+% Data is the raw fuel that powers machine learning models. However, raw data is often messy, incomplete, and potentially biased. Our job is to transform this raw material into something that’s clean, consistent, private, and as fair as possible.
 %
-% In this presentation, we’ll tackle data preparation from a holistic perspective. We’ll see how to clean and transform data automatically, enforce data protection laws, guard against harmful biases, and maintain the trust of the people our models serve.
+% In this session, we’ll not only discuss why ethical data handling is crucial; we’ll walk through practical preprocessing techniques, code examples, and methods for privacy protection and bias mitigation. Our goal is to make this all very tangible—something you can take back to your codebase and implement tomorrow.
 %
-% Let’s dive into the world of ethical data handling.
+% Let’s begin by reaffirming the importance of approaching data with an ethical mindset.
 %%% VOICEOVER OFF
 \maketitle
 
@@ -70,215 +72,276 @@
 % Overview Slide
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Here’s our roadmap for this presentation:
+% Here’s what we’ll cover today:
+% 1. Why ethical data handling is essential and what it entails beyond just compliance.
+% 2. Automated preprocessing techniques—going beyond theoretical steps to show actual code for handling missing data, outliers, and transforming features.
+% 3. Data validation and quality checks—seeing how to integrate these into automated scripts so we catch issues before model training.
+% 4. Privacy considerations and compliance with regulations like GDPR, including strategies like pseudonymization and encryption.
+% 5. Bias detection and mitigation, with hands-on examples of how to measure and reduce unwanted biases in your datasets.
 %
-% 1. We’ll start by understanding why ethical data handling matters so much—not just to avoid bad press, but to genuinely serve users fairly.
-% 2. Then we’ll discuss automated data preprocessing techniques—how to detect missing values, fix inconsistencies, and handle diverse data formats.
-% 3. We’ll explore how to ensure data quality and reliability through validation and error detection.
-% 4. We’ll integrate ethics into each step—privacy protection, GDPR compliance, and safeguarding sensitive information.
-% 5. Finally, we’ll address bias detection and mitigation, ensuring we don’t entrench unfairness in our models.
+% By the end, you’ll have practical tools and a code-centric roadmap for building a trustworthy, fair, and private ML data pipeline.
 %%% VOICEOVER OFF
 \begin{frame}{What We’ll Cover Today}
 \begin{itemize}
-\item Why ethical data handling is essential, not optional
-\item Automated preprocessing: cleaning, transforming, validating data
-\item Ensuring data quality and reliability with systematic checks
-\item Respecting privacy, complying with regulations (e.g., GDPR)
-\item Detecting and mitigating bias to build fair, trustworthy models
+\item Why ethical data handling matters: trust, fairness, reputation
+\item Practical, automated preprocessing: from cleaning to transformation
+\item Ensuring data quality: validation scripts and continuous checks
+\item Privacy and compliance: embedding GDPR and data protection into your pipeline
+\item Identifying and mitigating bias: concrete techniques and tools
 \end{itemize}
 
 \vspace{0.8em}
-\emph{By the end, you’ll have concrete practices to ensure data is a strength, not a liability.}
+\emph{Our focus: Move from theory to practice, ensuring data integrity, privacy, and fairness.}
 \end{frame}
 
 %------------------------------------------------------------
 % Importance of Ethical Data Handling
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Data isn’t just numbers and text—it represents people, their behaviors, their lives. Handling it ethically isn’t merely a compliance task; it’s about respect and responsibility.
+% Ethical data handling goes beyond avoiding fines or bad press. It’s about respecting the people represented in our datasets.
 %
-% When companies mishandle data—leaking sensitive information, fueling biased decisions—they erode public trust and harm real individuals.
+% Every row could be someone’s health record, financial history, or career opportunity. By ethically handling data, we:
+% - Protect privacy and reduce potential harm if data is leaked or misused.
+% - Retain public trust, making people more willing to share data and use our products.
+% - Create models that are fair and just, improving societal outcomes rather than reinforcing biases.
 %
-% Ethical data handling builds credibility, fosters user trust, and reduces legal and reputational risks. More importantly, it ensures our AI solutions uplift rather than oppress.
-%
-% Let’s commit to putting human values at the center of our data practices.
+% Treating data ethically is not just a moral imperative; it’s essential for building long-term trust and sustainable AI products.
 %%% VOICEOVER OFF
 \begin{frame}{Why Ethical Data Handling Matters}
 \begin{itemize}
-\item Data represents real people, not just abstract entries
-\item Ethical handling protects privacy, dignity, and fairness
-\item Avoiding biases and breaches maintains trust and credibility
+\item Data = real individuals’ personal details, behaviors, and rights
+\item Trust and credibility: A must for sustainable product adoption
+\item Reduces legal risks and reputational damage from misuse or bias
 \end{itemize}
 
-\vspace{0.8em}
-\emph{Ethical data stewardship is the foundation of user trust and sustainable ML solutions.}
-
-% [OPTIONAL IMAGE HERE: Icon of a lock or shield over a database]
+\emph{Ethical data stewardship is the moral and practical cornerstone of responsible AI.}
 \end{frame}
 
 %------------------------------------------------------------
 % Automated Data Preprocessing Intro
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Data rarely arrives in a perfect form. It might have missing values, inconsistent formats, outliers, or redundancies. Doing this cleaning and transformation by hand is error-prone and time-consuming.
+% Raw data is seldom perfect. Missing values, inconsistent formats, and outliers are the norm. Manual cleaning is slow and error-prone.
 %
-% Automated preprocessing scripts streamline these tasks: detecting missing values, handling outliers gracefully, merging datasets, and ensuring consistent formats.
+% Instead, we want automated preprocessing pipelines:
+% - Define clear rules for handling missing data, outliers, or strange values.
+% - Ensure reproducibility: the same input dataset always leads to the same cleaned output.
+% - Improve transparency: well-documented preprocessing code reduces guesswork and bias.
 %
-% Automation frees data scientists to focus on insights rather than grunt work, and it creates repeatable, transparent processes that enhance quality and fairness.
+% This automation lays a solid foundation for fair and accurate modeling later on.
 %%% VOICEOVER OFF
 \begin{frame}{Automated Data Preprocessing}
 \begin{itemize}
-\item Handle missing values, outliers, and inconsistencies automatically
-\item Uniformly transform data, standardizing features and formats
-\item Reduce human error and foster reproducible, transparent data workflows
+\item Systematically detect and address missing or inconsistent values
+\item Standardize units, formats, and encodings without manual intervention
+\item Increase reproducibility, reduce human bias and manual errors
 \end{itemize}
 
-\vspace{0.8em}
-\emph{Automation shifts focus from manual cleanup to building reliable, ethical pipelines.}
-
-% [OPTIONAL IMAGE HERE: Data cleaning icons or code snippet representation]
+\emph{Automation lets us spend less time fixing data manually, and more time ensuring quality and fairness.}
 \end{frame}
 
 %------------------------------------------------------------
 % Techniques for Data Cleaning and Transformation
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% How do we implement automated preprocessing?
+% Let’s get practical. Suppose we have a dataset with missing values, mixed data formats, and categorical variables that need encoding. How do we automate this?
 %
-% For example:
-% - Use scripts or frameworks to detect missing values and choose appropriate strategies (imputation, removal, or special markers).
-% - Identify outliers using statistical methods or domain knowledge, deciding whether to cap them, transform them, or exclude them.
-% - Standardize units, convert categorical variables, and handle text fields uniformly.
+% - Missing Values: Use Python’s `pandas` to detect nulls and `scikit-learn`’s imputation methods.
+% - Outliers: Identify with statistical rules (e.g., IQR-based filters) and handle them programmatically.
+% - Feature transformations: Standardizing numeric features, encoding categorical features, or normalizing text.
 %
-% By encoding these rules in code, we ensure consistency, reduce manual intervention, and maintain a clear audit trail.
+% Let’s see a brief code snippet. We’ll assume we’re dealing with a `pandas` DataFrame and using `scikit-learn` transformers.
 %%% VOICEOVER OFF
 \begin{frame}{Practical Preprocessing Techniques}
-\begin{itemize}
-\item Missing data: Impute (mean, median), flag or remove strategically
-\item Outliers: Apply robust statistical checks or domain-specific thresholds
-\item Feature standardization: Convert formats, ensure consistent units, encode categories
-\end{itemize}
+\begin{minted}[fontsize=\small]{python}
+import pandas as pd
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+# Load your raw data
+df = pd.read_csv("raw_data.csv")
+
+# Handle missing numeric values by imputing the mean
+numeric_cols = df.select_dtypes(include=['float', 'int']).columns
+imputer = SimpleImputer(strategy='mean')
+df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+
+# One-hot encode categorical variables
+categorical_cols = df.select_dtypes(include=['object']).columns
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+encoded = encoder.fit_transform(df[categorical_cols])
+encoded_df = pd.DataFrame(encoded, columns=encoder.get_feature_names_out(categorical_cols))
+df = pd.concat([df.drop(columns=categorical_cols), encoded_df], axis=1)
+
+# Scale numeric features for model readiness
+scaler = StandardScaler()
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+\end{minted}
 
 \vspace{0.8em}
-\emph{Well-defined preprocessing rules build confidence and clarity into data pipelines.}
-
-% [OPTIONAL IMAGE HERE: Before/After data table illustration]
+\emph{This code systematically cleans, encodes, and scales your data, making preprocessing repeatable and transparent.}
 \end{frame}
 
 %------------------------------------------------------------
 % Data Validation and Quality Assurance
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Even after cleaning, we must validate data quality. Automated validation scripts can detect anomalies—like unexpected null spikes or mismatched schemas—early in the pipeline.
+% Cleaning is step one. Next is validation: ensuring that the cleaned data meets certain quality standards:
+% - Schema checks: Are all expected columns present?
+% - Range checks: Do values fall within expected boundaries?
+% - Distribution checks: Have key statistics drifted compared to a known baseline?
 %
-% Quality assurance tools catch errors before they poison training sets. They can warn if a critical feature is missing, or if data distributions shift suspiciously over time.
+% We can automate these checks at the start of our pipeline. If something’s off, we log it and halt downstream processes.
 %
-% Ensuring data integrity means our models stand on a solid foundation, not a shaky pile of questionable inputs.
+% Let’s look at an example of automated validation checks using Python’s `pandera` library, which lets you define data schemas and validate DataFrames.
 %%% VOICEOVER OFF
 \begin{frame}{Data Quality Assurance}
-\begin{itemize}
-\item Implement validation checks: schema conformity, range checks, uniqueness tests
-\item Detect anomalies early: unusual patterns, distribution shifts, missing critical features
-\item Maintain logs and reports to track data quality trends over time
-\end{itemize}
+\begin{minted}[fontsize=\small]{python}
+import pandera as pa
+from pandera.typing import DataFrame, Series
+
+# Define a schema
+class InputSchema(pa.SchemaModel):
+    age: Series[int] = pa.Field(ge=0, le=120)
+    income: Series[float] = pa.Field(ge=0)
+    # Add more columns and constraints as needed
+
+    class Config:
+        strict = True  # no unexpected columns allowed
+
+# Validate the dataframe
+try:
+    validated_df = InputSchema.validate(df)
+except pa.errors.SchemaError as e:
+    # Log error and halt the pipeline
+    print("Data validation failed:", e)
+    # handle the error (e.g., send alert, stop the pipeline)
+\end{minted}
 
 \vspace{0.8em}
-\emph{Robust validation turns raw data into a trusted resource for responsible AI.}
-
-% [OPTIONAL IMAGE HERE: Magnifying glass over dataset icon]
+\emph{In practice, this ensures we catch data issues before model training, improving reliability and trust.}
 \end{frame}
 
 %------------------------------------------------------------
 % Ethical Data Management: Privacy & Regulations
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Ethics extend beyond fairness—privacy and regulatory compliance are non-negotiable.
+% Ethical handling also means respecting privacy and obeying laws like GDPR.
 %
-% Consider GDPR: it mandates data protection, user consent, and the right to be forgotten. We must incorporate anonymization, pseudonymization, and encryption where needed.
+% Strategies:
+% - Pseudonymization: Replace direct identifiers (names, SSNs) with anonymized keys.
+% - Encryption at rest and in transit.
+% - Minimize data: Store only what’s necessary for modeling.
+% - Allow opt-outs and honor “right to be forgotten” requests.
 %
-% Respecting sensitive data—like health or financial info—means implementing strict access controls. Automated pipelines can enforce these rules, ensuring no unauthorized exposure.
-%
-% By embedding privacy safeguards, we honor the trust users place in our systems.
+% In code, this might mean hashing IDs or removing identifiable columns before storage. Let’s see a snippet.
 %%% VOICEOVER OFF
 \begin{frame}{Privacy Protection and Compliance}
-\begin{itemize}
-\item Implement anonymization or pseudonymization for sensitive identifiers
-\item Follow GDPR and other regulations: user consent, data minimization, right to erasure
-\item Restrict access, log data handling actions, and maintain thorough documentation
-\end{itemize}
+\begin{minted}[fontsize=\small]{python}
+import hashlib
+
+# Example: Pseudonymize user IDs
+if 'user_id' in df.columns:
+    df['user_id_hashed'] = df['user_id'].apply(
+        lambda x: hashlib.sha256(str(x).encode()).hexdigest()
+    )
+    df.drop(columns=['user_id'], inplace=True)
+
+# Remove personally identifiable information (PII)
+pii_columns = ['name', 'email', 'phone_number']
+df = df.drop(columns=[col for col in pii_columns if col in df.columns])
+
+# Further steps could include encryption for storage or implementing user consent checks
+\end{minted}
 
 \vspace{0.8em}
-\emph{Privacy isn’t just legal compliance—it’s respecting human rights and autonomy.}
-
-% [OPTIONAL IMAGE HERE: A padlock over a database or shield icon]
+\emph{Integrating privacy measures at the data layer reduces risks and builds user trust.}
 \end{frame}
 
 %------------------------------------------------------------
 % Ethical Data Management: Bias Detection
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Even clean, validated, and private data can still harbor biases. Historical imbalances or sampling errors may skew our training sets.
+% Even if data is clean and private, it can still encode societal biases. We must inspect distributions and outcomes across groups (e.g., gender, ethnicity) to detect unfair patterns.
 %
-% Bias detection methods—like comparing outcomes across demographic groups—help us spot if certain populations are underrepresented or inaccurately represented.
+% Tools like `aif360` (by IBM) provide fairness metrics and methods to adjust datasets. For example, we can measure disparate impact or demographic parity and then re-balance the training set if needed.
 %
-% Automated reports can flag suspicious patterns: Are women systematically assigned lower credit scores after preprocessing? Are certain ethnic groups missing from the dataset?
-%
-% Identifying bias early means we can correct it before training, ensuring we don’t encode societal injustices into our models.
+% Let’s see a code snippet using `aif360` to detect and mitigate bias. Assume we have a dataset with a sensitive attribute like “gender.”
 %%% VOICEOVER OFF
 \begin{frame}{Detecting and Mitigating Bias}
-\begin{itemize}
-\item Use fairness metrics: parity checks across demographic segments
-\item Monitor representation: ensure no group is disproportionately excluded
-\item Adjust preprocessing steps or sampling strategies to rebalance the data
-\end{itemize}
+\begin{minted}[fontsize=\small]{python}
+from aif360.datasets import BinaryLabelDataset
+from aif360.metrics import BinaryLabelDatasetMetric
+from aif360.algorithms.preprocessing import Reweighing
+
+# Convert df to aif360 dataset, specifying label and protected attribute
+data = BinaryLabelDataset(
+    favorable_label=1,
+    unfavorable_label=0,
+    df=df,
+    label_names=['approved_loan'],
+    protected_attribute_names=['gender']
+)
+
+metric = BinaryLabelDatasetMetric(data, unprivileged_groups=[{'gender':0}],
+                                  privileged_groups=[{'gender':1}])
+
+# Check disparate impact (ratio of favorable outcomes between groups)
+disparate_impact = metric.disparate_impact()
+print("Disparate Impact:", disparate_impact)
+
+# If disparate impact < 0.8, consider reweighing
+if disparate_impact < 0.8:
+    rw = Reweighing(unprivileged_groups=[{'gender':0}],
+                    privileged_groups=[{'gender':1}])
+    data_transformed = rw.fit_transform(data)
+    # data_transformed can now be used for modeling with less bias
+\end{minted}
 
 \vspace{0.8em}
-\emph{Catching bias in the data stage prevents deploying models that perpetuate discrimination.}
-
-% [OPTIONAL IMAGE HERE: Balanced scale comparing two subsets of data]
+\emph{By detecting and adjusting for bias pre-training, we ensure models are more equitable.}
 \end{frame}
 
 %------------------------------------------------------------
 % Putting It All Together
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% We’ve explored data handling from multiple angles—automation, validation, privacy, and bias mitigation. Each of these threads weaves together into a holistic approach.
+% We’ve seen:
+% - Why ethics matters: It preserves trust and prevents harm.
+% - How to automate data cleaning with code: Ensuring reproducibility and transparency.
+% - How to validate data quality: Early checks to catch problems.
+% - How to enforce privacy and comply with regulations like GDPR: Minimizing and securing data.
+% - How to detect and mitigate bias: Using fairness metrics and preprocessing techniques.
 %
-% A well-designed pipeline ensures data flows from raw sources into ethically prepared training sets. It respects regulations, maintains quality, protects privacy, and guards against bias.
-%
-% In the next steps, we’ll integrate these principles into the larger ML pipeline. By doing so, we ensure that every model we build rests on a solid, fair, and responsible data foundation.
+% Combined, these measures produce a data pipeline that is robust, private, and equitable. By incorporating these techniques into our daily workflows, we don’t just talk about ethics—we practice it.
 %%% VOICEOVER OFF
 \begin{frame}{A Holistic Data Strategy}
 \begin{itemize}
-\item Combine automation, validation, privacy measures, and bias checks into one pipeline
-\item Document every step for transparency and accountability
-\item Set the stage for fair, impactful ML models built on trustworthy data
+\item Integrate cleaning, validation, privacy, and bias mitigation into one automated flow
+\item Document steps for transparency and auditability
+\item Regularly iterate and improve based on feedback and monitoring
 \end{itemize}
 
-\vspace{0.8em}
-\emph{A robust, ethical data pipeline empowers us to build AI that genuinely benefits everyone.}
-
-% [OPTIONAL IMAGE HERE: Pipeline diagram showing data input and checks at each stage]
+\emph{A well-structured, ethical data pipeline is the backbone of fair and effective AI systems.}
 \end{frame}
 
 %------------------------------------------------------------
 % Conclusion & Next Steps
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% We’ve delved deep into data preparation and ethical handling, setting the stage for the rest of our journey.
+% We’ve set the stage for ethical modeling by ensuring the data feeding our models is trustworthy, private, and fair.
 %
-% Next, we’ll move into automating model training and ensuring that ethical principles carry over into model development itself. We’ll see how reproducibility, versioning, and fairness metrics continue to guide our workflow.
+% In our next presentation, we’ll dive into automated model training and evaluation pipelines. We’ll see how our ethically prepared data empowers fairer and more reliable model outcomes. We’ll also learn about model versioning, continuous integration, and continuous delivery to ensure that these ethical practices persist as our systems evolve.
 %
-% With a solid, ethical data foundation in place, we’re one step closer to delivering AI solutions that are efficient, fair, and trusted by all.
+% This journey—from raw data to responsibly trained models—is a continuous cycle. By making ethical and automated data handling our standard practice, we ensure that every subsequent step in the ML lifecycle is built on rock-solid foundations.
 %%% VOICEOVER OFF
 \begin{frame}{Next Steps}
 \begin{itemize}
-\item Next Presentation: Automating Model Training \& Ensuring Fairness
-\item Building on our ethical data pipeline to create responsible models
+\item Next Presentation: Automated Model Training \& Ethical Evaluation
+\item Connect ethical data pipelines to model building and deployment best practices
 \end{itemize}
 
-\vspace{0.8em}
-\emph{From well-prepared data to ethically trained models—the journey continues.}
+\emph{The path ahead: turning ethical principles into sustainable, real-world AI solutions.}
 \end{frame}
 
 \end{document}

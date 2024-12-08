@@ -1,44 +1,216 @@
-\documentclass[10pt]{beamer}
+\documentclass[aspectratio=169]{beamer}
 
-% Use Metropolis theme
-\usetheme[progressbar=frametitle]{metropolis}
-\usepackage{appendixnumberbeamer}
-
-% Use system fonts (if needed)
+% Modern theme & fonts
+\usetheme{metropolis}
 \usefonttheme{professionalfonts}
-
-% Load required packages
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{booktabs}
-\usepackage[scale=2]{ccicons}
+\usepackage{bookmark}
 
-\usepackage{pgfplots}
+% Metropolis adjustments
+\metroset{progressbar=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{minted}
+\usemintedstyle{friendly}
 \usepackage{menukeys}
 
-% Title page info
-\title{Presentation Title}
-\subtitle{Subtitle}
-\date{\today}
-\author{Your Name}
-\institute{Your Institution}
+\title{Code Quality, Security \& Ethical Implications in ML Development}
+\subtitle{AI Masters Capstone Project - Presentation 5}
+\author{Jonathan Agustin}
+\date{November 2024}
 
 \begin{document}
 
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Welcome back. We’ve examined automated pipelines, data preparation, fairness metrics, and responsible deployment. Now let’s turn our attention to code quality, security, and the deep ethical responsibilities that come with building machine learning systems.
+%
+% As Rachel Thomas points out in her article "When Data Science Destabilizes Democracy and Facilitates Genocide" (fast.ai, Nov 2017), data scientists aren’t just writing code; they’re shaping human lives, institutions, and even geopolitical landscapes. The Volkswagen engineer who was sentenced to prison for coding emissions-cheating software (Thomas, 2017) illustrates that you can’t evade accountability by saying “I was just following orders.”
+%
+% Code that enables unethical actions—be it suppressing certain communities, propagating hate content, or misleading regulators—can lead to severe real-world harm. The responsibility doesn’t vanish at the keyboard. Instead, ethical considerations must be woven into code quality, security, and reporting. Let’s explore how to integrate these principles into your ML development practices.
+%%% VOICEOVER OFF
 \maketitle
 
-\begin{frame}{Overview}
-  \tableofcontents
+%------------------------------------------------------------
+% Overview Slide
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% In this final presentation, we’ll cover:
+%
+% 1. Code Quality Assurance: Ensuring clarity, consistency, and maintainability, which lays the groundwork for integrating ethical safeguards.
+% 2. Security Scanning & Attestation: Recognizing that vulnerabilities can be exploited to harm vulnerable populations, and that we’re responsible for preventing such abuses.
+% 3. Automating Documentation & Reporting: Transparency ensures that data subjects, stakeholders, and even regulators can understand decisions and hold creators accountable.
+% 4. Ethical Software Development: Incorporating lessons from recent history and scholarship. As Thomas (2017) and others show, failing to consider downstream impacts of your code can facilitate atrocities, destabilize democracies, or put you at legal risk.
+%
+% Our goal: build robust, secure, and ethically anchored ML systems.
+%%% VOICEOVER OFF
+\begin{frame}{Agenda}
+\begin{itemize}
+\item Code Quality Assurance
+\item Security Scanning \& Attestation
+\item Automating Documentation \& Reporting
+\item Ethical Software Development: Accountability \& Justice
+\end{itemize}
+
+\vspace{0.8em}
+\emph{We finalize our ML toolset by anchoring it in ethical responsibility and legal accountability.}
 \end{frame}
 
-\section{First Section}
+%------------------------------------------------------------
+% Code Quality Assurance
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% High code quality ensures that your systems are maintainable and transparent. This reduces the likelihood that hidden shortcuts, undocumented “hacks,” or ethically dubious logic remain buried where they can cause harm.
+%
+% Consider the VW emissions scandal: a few lines of deceptive code caused widespread environmental damage and legal repercussions. The engineer involved, following orders, still went to jail (Thomas, 2017). Code quality includes robust reviews and ethical checks, so no one can hide behind “I was just implementing a feature.”
+%
+% By incorporating style guides, linters, and thorough reviews, we create a culture where questionable requests are challenged and discussed, shining light on potential ethical red flags before they become lawbreaking scandals.
+%%% VOICEOVER OFF
+\begin{frame}{Code Quality Assurance}
+\begin{itemize}
+\item Consistent style guidelines \& linting for maintainable code
+\item Code reviews as ethical checkpoints—raise questions on suspicious logic
+\item Clear documentation prevents “plausible deniability” in unethical designs
+\end{itemize}
 
-\begin{frame}{First Frame}
-  \begin{itemize}
-    \item First point
-    \item Second point
-    \item Third point
-  \end{itemize}
+\vspace{0.8em}
+\emph{High-quality code is a foundation for both technical excellence and ethical accountability.}
+\end{frame}
+
+%------------------------------------------------------------
+% Security Scanning & Attestation
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Security scanning and attestation aren’t just technical niceties—they’re ethical imperatives. Insecure systems can centralize power in malicious hands, enabling surveillance states or fraudulent activities that harm real people, as Rachel Thomas highlights in discussing how data science can enable propaganda or genocide.
+%
+% Attestation ensures we know where code and dependencies come from, making it harder for unethical modifications to slip in unnoticed. By proactively scanning for vulnerabilities, we prevent code from becoming a tool of oppression or manipulation.
+%%% VOICEOVER OFF
+\begin{frame}{Security Scanning \& Attestation}
+\begin{itemize}
+\item Automated vulnerability detection to preempt misuse
+\item Attestation ensures the integrity \& authenticity of code components
+\item A secure pipeline guards against ethically disastrous exploits
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Security is not neutral—failing to secure your code can facilitate immense harm.}
+\end{frame}
+
+%------------------------------------------------------------
+% Automating Documentation & Reporting
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Automated documentation and reporting foster transparency. Without transparency, unethical systems thrive in the shadows—consider propaganda-amplifying algorithms that remain opaque and unchallenged.
+%
+% Detailed model cards, audits, and version histories allow external stakeholders—journalists, regulators, impacted communities—to understand what’s happening and hold developers accountable. As Thomas (2017) emphasizes, we must acknowledge that our code affects real human communities. Honest reporting ensures that those communities can contest decisions and seek justice if harmed.
+%%% VOICEOVER OFF
+\begin{frame}{Automating Documentation \& Reporting}
+\begin{itemize}
+\item Model cards \& data sheets reveal assumptions, limitations, and potential biases
+\item Transparent audit trails: who changed what, when, and why
+\item Supports meaningful recourse and contestability for impacted communities
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Information empowers oversight, shifting power back towards those impacted.}
+\end{frame}
+
+%------------------------------------------------------------
+% Ethical Software Development
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Ethical software development transcends “just making it work.” It means questioning product decisions, dataset sources, and requested features. It means recognizing that “I was following orders” is not a defense (Thomas, 2017).
+%
+% Consider integrating an ethics checklist into code reviews. Ask: Does this feature enable harmful feedback loops? Could it marginalize certain communities or aid despots in surveilling citizens? Are we encoding biases from historical data that perpetuate injustice?
+%
+% This broader ethical lens reflects the reality that ML isn’t a game. It’s about human lives, elections, and global stability. As data scientists and engineers, we hold tremendous power—and with that power comes undeniable responsibility.
+%%% VOICEOVER OFF
+\begin{frame}{Ethical Software Development}
+\begin{itemize}
+\item Go beyond accuracy: consider societal impact, justice, and accountability
+\item Encourage internal dialogues: raise flags if your code could be misused
+\item Remember VW: developers can face prison, not just moral regret
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Ethical coding is about preventing harm and ensuring that “just following orders” never becomes your legacy.}
+\end{frame}
+
+%------------------------------------------------------------
+% Bringing It All Together
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Throughout this series, we’ve built:
+% - Automated pipelines that handle data ethically
+% - Fairness metrics and bias checks integrated into training
+% - Secure, compliant deployments that account for privacy and integrity
+% - Code quality and documentation strategies that ensure transparency and accountability
+%
+% Combined with a deep understanding of how data science can destabilize societies if misapplied (Thomas, 2017), we’ve crafted a holistic approach. Your ML systems can now be robust, secure, fair, and ethically aware. They serve people, rather than exploit them, and uphold legal and moral standards, rather than skirt them.
+%%% VOICEOVER OFF
+\begin{frame}{A Complete Ethical ML Ecosystem}
+\begin{itemize}
+\item Ethical data handling + responsible training + safe deployments = trust
+\item Code quality, security, and transparency build on that trust
+\item Aligning technology with human rights, justice, and societal well-being
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Your ML pipeline is now both a technical marvel and a moral statement.}
+\end{frame}
+
+%------------------------------------------------------------
+% Conclusion & Wrap-Up
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Congratulations—you’ve seen the full picture. Machine learning isn’t a neutral field. It’s political, social, and ethical, with consequences ranging from subtle discrimination to catastrophic harm.
+%
+% By integrating the lessons from Rachel Thomas’s article and others, you understand that code can be a weapon or a shield. Quality assurance, security measures, documentation, and ethical design are non-negotiable.
+%
+% As you proceed in your career, remember the VW engineer, remember the communities harmed by disinformation, and remember that your responsibility extends beyond the build. May your ML journey be not only innovative and efficient, but a force for equity, integrity, and the protection of human life and dignity.
+%%% VOICEOVER OFF
+\begin{frame}{Final Thoughts}
+\begin{itemize}
+\item ML developers shape global narratives and human destinies
+\item Ethical safeguards aren’t optional; they are our shared duty
+\item Innovate responsibly—balance power, challenge injustice, and uphold human values
+\end{itemize}
+
+\vspace{0.8em}
+\emph{Go forth and build ML systems that reflect our best selves, not our worst impulses.}
 \end{frame}
 
 \end{document}
