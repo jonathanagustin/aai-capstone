@@ -84,13 +84,10 @@
 \item Use GitHub CLI \keys{gh} for PRs/issues/merges in terminal
 \item Minimal context switching, improved flow
 \end{itemize}
-\vspace{0.3em}  % Reduced from 0.5em
+\vspace{0.3em}
 \end{frame}
 
 % GitHub Video (VO ~30s)
-%%% VOICEOVER ON
-% For more powerful operations, try the GitHub CLI, gh. With gh you can create pull requests, view issues, and merge PRs right from your terminal. For example, gh pr create walks you through opening a new pull request without leaving your coding environment. This keeps you in the zone, saving precious context-switching time.
-%%% VOICEOVER OFF
 \begin{frame}{GitHub Demo}
 \centering
 \IfFileExists{\VideoGitHub}{%
@@ -113,19 +110,19 @@
 %------------------------------------------------------------
 %%% VOICEOVER ON
 % Next up: your primary coding environment.
-
+%
 % Visual Studio Code is widely adopted in the industry, especially for Python and ML work. Let’s power it up with some shortcuts and features.
-
+%
 % CTRL+X: Delete a line instantly—no selection needed.
-
+%
 % CTRL+/: Comment or uncomment lines in one keystroke.
-
+%
 % CTRL+SHIFT+P: Opens the command palette—your gateway to any VS Code feature.
-
+%
 % CTRL+P: Jump to any file by typing a few letters.
-
+%
 % Multiple cursors: Hold ALT+Click to place multiple cursors and edit multiple places at once, perfect for renaming variables or adjusting repetitive lines.
-
+%
 % Mastering these shortcuts means less time navigating and more time coding.
 %%% VOICEOVER OFF
 \begin{frame}{VS Code Essentials}
@@ -138,11 +135,7 @@
 \end{itemize}
 \end{frame}
 
-% VS Code Video (VO ~45s)
-%%% VOICEOVER ON
-% Let's watch a demonstration of these VS Code shortcuts.
-% Notice how using these key combinations can make coding more efficient by reducing the time spent on common tasks like deleting lines, commenting code, navigating files, and editing multiple lines at once.
-%%% VOICEOVER OFF
+% VS Code Video
 \begin{frame}{VS Code Demo}
 \centering
 \IfFileExists{\VideoVSCode}{%
@@ -162,6 +155,7 @@
 
 %------------------------------------------------------------
 % Copilot Slides (VO ~30s)
+%------------------------------------------------------------
 %%% VOICEOVER ON
 % Developer Experience has reached a new frontier: AI-assisted coding. GitHub Copilot suggests code completions and can even transform code snippets with natural language requests.
 %
@@ -175,11 +169,7 @@
 \end{itemize}
 \end{frame}
 
-% Copilot Video (VO ~30s)
-%%% VOICEOVER ON
-% Here's a demo of Copilot in action.
-% We'll see how it suggests code completions and refactors code based on simple natural language commands, streamlining the coding process.
-%%% VOICEOVER OFF
+% Copilot Video
 \begin{frame}{Copilot Demo}
 \centering
 \IfFileExists{\VideoCopilot}{%
@@ -198,9 +188,158 @@
 \end{frame}
 
 %------------------------------------------------------------
-% Environment & direnv Slides (VO ~40s)
+% Google Colab Slides
+%------------------------------------------------------------
 %%% VOICEOVER ON
-% Smooth development depends on stable, isolated environments. Tools like pyenv, conda, or pipx let you juggle multiple Python versions and dependencies easily. For ML projects, this prevents 'works on my machine' issues.
+% Sometimes you need a quick, hosted environment to run Python code or test ML models without setting up a local environment. Google Colab provides a free, cloud-based Jupyter notebook environment with built-in GPU support for certain tasks.
+%
+% Tradeoffs: Colab is convenient, requires no local setup, and is great for quick experiments or teaching. However, it's limited in customization, can be slower for large datasets if they need to be repeatedly uploaded, and sessions can expire, causing a need to rerun everything. Despite these tradeoffs, Colab can be an excellent way to prototype quickly and share reproducible notebooks.
+%%% VOICEOVER OFF
+\begin{frame}{Google Colab}
+\begin{itemize}
+\item Pros:
+  \begin{itemize}
+    \item No local setup required
+    \item Free GPU/TPU support
+    \item Easy to share and collaborate
+  \end{itemize}
+\item Cons / Tradeoffs:
+  \begin{itemize}
+    \item Session timeouts require reruns
+    \item Limited persistence and customization
+    \item Potential slower file I/O for large datasets
+  \end{itemize}
+\item Ideal for rapid prototyping and teaching
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% GitHub Codespaces Slides
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% For a more integrated, customizable cloud development environment, consider GitHub Codespaces. It's a fully featured online dev environment running VS Code in your browser, integrated directly with your repository.
+%
+% Tradeoffs: While Codespaces offers a more powerful and extensible environment than Colab (with persistent dev containers, custom setups, and integrated terminal), it's not free beyond certain usage limits and may require GitHub Enterprise for extensive use. It’s perfect for standardized environments, onboarding new team members quickly, and ensuring everyone has a consistent setup.
+%%% VOICEOVER OFF
+\begin{frame}{GitHub Codespaces}
+\begin{itemize}
+\item Pros:
+  \begin{itemize}
+    \item Fully customizable dev environment in the cloud
+    \item Integrated with GitHub repos, PRs, issues
+    \item Consistent environment for team onboarding
+  \end{itemize}
+\item Cons / Tradeoffs:
+  \begin{itemize}
+    \item Cost beyond free tier
+    \item Requires robust network connection
+    \item Not always as fast as local development for heavy tasks
+  \end{itemize}
+\item Great for standardized setups and scaling dev environments
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% uv (Python Package Manager) Slides
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Let's talk about a modern Python package manager written in Rust: `uv`. It's designed to provide deterministic, reproducible environments and can be an alternative to tools like pip or pipenv.
+%
+% With `uv`, you can:
+% - Initialize a project and manage dependencies in a lockfile.
+% - Achieve consistent builds across machines.
+% - Potentially get performance benefits due to Rust-based internals.
+%
+% Still early in adoption, so tradeoffs include less community support and ecosystem maturity compared to pip or conda.
+%%% VOICEOVER OFF
+\begin{frame}{\texttt{uv} - A Python Package Manager in Rust}
+\begin{itemize}
+\item Pros:
+  \begin{itemize}
+    \item Deterministic dependency resolution
+    \item Faster performance from Rust implementation
+    \item Lockfile ensures reproducible environments
+  \end{itemize}
+\item Cons / Tradeoffs:
+  \begin{itemize}
+    \item Less widely adopted than pip/conda
+    \item Smaller community and fewer online resources
+    \item Might not support all Python ecosystem features yet
+  \end{itemize}
+\item Ideal if you value reproducibility and performance
+\end{itemize}
+\end{frame}
+
+% uv usage examples
+\begin{frame}[fragile]{Using \texttt{uv}}
+\textbf{Installation:}
+If available via a package manager (e.g., Homebrew on macOS):
+\begin{minted}{bash}
+brew install uv
+\end{minted}
+
+Or download binaries from the GitHub releases page.
+
+\textbf{Initialize a project:}
+\begin{minted}{bash}
+cd my_project
+uv init
+\end{minted}
+
+This creates a \texttt{pyproject.toml} and a \texttt{uv.lock} file.
+
+\textbf{Adding dependencies:}
+\begin{minted}{bash}
+uv add requests
+uv add numpy==1.21.2
+\end{minted}
+
+\textbf{Installing all dependencies:}
+\begin{minted}{bash}
+uv sync
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% pipx Slides
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Another handy tool is \texttt{pipx}, which helps you install and run Python CLI tools in isolated environments. Rather than pollute your system site-packages, pipx ensures each tool has its own virtual environment, avoiding version conflicts.
+%%% VOICEOVER OFF
+\begin{frame}{\texttt{pipx} - Isolated Python CLI Tools}
+\begin{itemize}
+\item Installs Python CLI tools in isolated venvs
+\item Avoids dependency/version conflicts with system Python
+\item Easy to upgrade or remove tools without breaking environments
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Using \texttt{pipx}}
+\textbf{Installation:}
+\begin{minted}{bash}
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
+# Restart shell if needed
+\end{minted}
+
+\textbf{Install a CLI tool (e.g. Black):}
+\begin{minted}{bash}
+pipx install black
+black --version
+\end{minted}
+
+\textbf{Upgrade or uninstall:}
+\begin{minted}{bash}
+pipx upgrade black
+pipx uninstall black
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Environment & direnv Slides (VO ~40s)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Smooth development depends on stable, isolated environments. Tools like pyenv, conda, pipx let you juggle multiple Python versions and dependencies easily. For ML projects, this prevents 'works on my machine' issues.
 %
 % Want to load environment variables automatically per project? Use direnv. Put environment variables in .envrc, and when you cd into your project directory, direnv loads them automatically. No more manual export commands.
 %%% VOICEOVER OFF
@@ -213,10 +352,6 @@
 \end{frame}
 
 % direnv Video (VO ~30s)
-%%% VOICEOVER ON
-% Let's see how direnv works.
-% In this demo, we'll navigate to a project directory and watch as direnv automatically loads environment variables, activating the correct Python version and dependencies seamlessly.
-%%% VOICEOVER OFF
 \begin{frame}{Environment/direnv Demo (30s)}
 \centering
 \IfFileExists{\VideoDirenv}{%
@@ -236,6 +371,7 @@
 
 %------------------------------------------------------------
 % Task & Taskfile Slides (VO ~45s)
+%------------------------------------------------------------
 %%% VOICEOVER ON
 % Now let’s automate repetitive steps. Meet Task, a modern alternative to Make. Instead of wrestling with tabs and arcane syntax, you define tasks in Taskfile.yml using YAML. Tasks can depend on each other—run task train and if setup is required, it runs automatically.
 %
@@ -249,12 +385,8 @@
 \end{itemize}
 \end{frame}
 
-%%% VOICEOVER ON
-% Here's an example of a Taskfile.yml.
-% We define a 'build' task that installs requirements and a 'test' task that runs after 'build'.
-% This setup ensures tasks run in the correct order and simplifies complex command sequences.
-%%% VOICEOVER OFF
 \begin{frame}[fragile]{Taskfile Example}
+\begin{minted}{yaml}
 version: '3'
 tasks:
   build:
@@ -266,13 +398,10 @@ tasks:
     deps: [build]
     cmds:
       - pytest tests/
+\end{minted}
 \end{frame}
 
-% Task Video (VO ~30-45s)
-%%% VOICEOVER ON
-% Let's watch a demo of using Task and Taskfile.yml.
-% We'll run predefined tasks that automate building and testing the project, showing how this tool simplifies workflow management.
-%%% VOICEOVER OFF
+% Task Video
 \begin{frame}{Task Demo}
 \centering
 \IfFileExists{\VideoTask}{%
@@ -292,6 +421,7 @@ tasks:
 
 %------------------------------------------------------------
 % Code Quality & pre-commit (VO ~45s)
+%------------------------------------------------------------
 %%% VOICEOVER ON
 % Clean, consistent code matters. Use Black for formatting and Flake8 for linting to keep code style and quality in check. Integrate pre-commit hooks so every git commit triggers these checks automatically. If something’s off, the commit is stopped until fixed, ensuring quality stays high from day one.
 %
@@ -305,11 +435,7 @@ tasks:
 \end{itemize}
 \end{frame}
 
-% pre-commit Video (VO ~30s)
-%%% VOICEOVER ON
-% In this demo, we'll see pre-commit hooks in action.
-% When we try to commit code that doesn't meet style guidelines, the hooks prevent the commit and provide feedback, allowing us to fix issues before they become part of the codebase.
-%%% VOICEOVER OFF
+% pre-commit Video
 \begin{frame}{Code Quality Demo}
 \centering
 \IfFileExists{\VideoPrecommit}{%
@@ -328,7 +454,7 @@ tasks:
 \end{frame}
 
 %------------------------------------------------------------
-% New Slide
+% Additional New Slide Example
 %------------------------------------------------------------
 \begin{frame}{New Slide Title}
 \begin{itemize}
@@ -342,7 +468,7 @@ tasks:
 % Wrap-Up (VO ~45s)
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% With these hacks—GitHub tricks for quick edits, VS Code shortcuts for effortless navigation, Copilot for AI-driven refactoring, environment managers to keep dependencies in check, Task for workflow automation, and pre-commit hooks for code quality—you’ve got a powerful toolkit.
+% With these hacks—GitHub tricks for quick edits, VS Code shortcuts for effortless navigation, Copilot for AI-driven refactoring, environment managers to keep dependencies in check, Task for workflow automation, pre-commit for code quality, plus the flexibility of Google Colab, GitHub Codespaces, and novel tools like uv—you’ve got a powerful toolkit.
 %
 % These tools free you from the drudgery of setup and repetitive tasks, letting you focus on building robust solutions. Master these now, and you’ll find the upcoming ML pipeline sessions much smoother. Let’s put these capabilities to use as we build and deploy real machine learning projects.
 %%% VOICEOVER OFF
@@ -350,10 +476,11 @@ tasks:
 \begin{itemize}
   \item GitHub \& GH CLI
   \item VS Code \& Copilot
-  \item pyenv/conda/pipx \& direnv
+  \item Google Colab \& GitHub Codespaces
+  \item pyenv/conda/pipx/uv \& direnv
   \item Task \& pre-commit
 \end{itemize}
-\vspace{-1em}  % Adjusted spacing to fix Overfull \vbox
+\vspace{-1em}
 \end{frame}
 
 %------------------------------------------------------------
@@ -362,16 +489,18 @@ tasks:
 %%% VOICEOVER ON
 % For more information, here are some resources to help you get started.
 % The official documentation for GitHub CLI, VS Code keybindings, and GitHub Copilot provide in-depth guides.
-% Additionally, check out the docs for pyenv, conda, pipx, direnv, Task, and pre-commit to explore these tools further.
-% In the next sessions, as we tackle automation, data preparation, model training, and deployment, you’ll have the edge these hacks provide. Let’s get started on making ML pipelines not just possible, but practical and efficient.
+% Additionally, check out docs for Colab, Codespaces, pyenv, conda, pipx, uv, direnv, Task, and pre-commit.
+% In the next sessions, as we tackle automation, data preparation, model training, and deployment, you’ll have the edge these hacks provide.
 %%% VOICEOVER OFF
 \begin{frame}{Resources \& Next Steps}
 \begin{itemize}
-\item GitHub Docs (gh CLI)
-\item VS Code official docs (keybindings)
-\item GitHub Copilot info
-\item pyenv/conda/pipx/direnv docs
-\item Task \& pre-commit documentation
+\item \href{https://cli.github.com/}{GitHub CLI Docs}
+\item \href{https://code.visualstudio.com/docs}{VS Code Documentation}
+\item \href{https://github.com/features/copilot}{GitHub Copilot Info}
+\item \href{https://research.google.com/colaboratory/}{Google Colab Docs}
+\item \href{https://github.com/features/codespaces}{GitHub Codespaces}
+\item pyenv/conda/pipx/uv/direnv/task/pre-commit docs
 \end{itemize}\label{lastpage}
 \end{frame}
+
 \end{document}

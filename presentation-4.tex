@@ -56,11 +56,13 @@
 % Title Slide
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Welcome back. We’ve tackled data ethics, automated training, and fair model development. Now, let’s focus on the final mile: deploying our models into real-world environments.
+% Welcome back to our AI Masters Capstone series. So far, we have explored the foundations of data ethics, the intricacies of automated model training workflows, and the principles behind building fair, explainable, and responsible machine learning models. With those fundamentals in hand, we are now ready to address one of the most critical and challenging phases in the machine learning lifecycle: deployment.
 %
-% Deployment isn’t a simple “flip the switch” moment—it’s a delicate orchestration of infrastructure, continuous integration, testing, security, compliance, and ongoing oversight. MLOps practices ensure our carefully built models consistently deliver value to users while respecting ethical and legal frameworks.
+% Deploying models into production is often considered the most complex and risky step. While training and validation occur in relatively controlled environments, production environments introduce a multitude of variables—real users with unpredictable behaviors, integrations with various systems, continuous performance demands, and stringent regulatory requirements. Successfully deploying models requires not only technical excellence—ensuring robust CI/CD pipelines, seamless infrastructure provisioning, and scalable architecture—but also a rigorous adherence to ethical standards and compliance guidelines.
 %
-% In this presentation, we’ll embrace deployment automation, MLOps best practices, and ethical deployment principles. By doing so, we guarantee that all our previous hard work—on fair data, responsible training, and transparent models—reaches users safely, securely, and for the long term.
+% In today’s session, we’ll delve deep into the advanced techniques of MLOps deployment. We’ll talk about how to integrate CI/CD pipelines that do more than just push code. We’ll see how Infrastructure as Code (IaC) tools like Terraform, combined with containerization and orchestration solutions like Docker and Kubernetes, allow you to replicate production environments, enhance reliability, and scale seamlessly. We will also uncover how to weave ethics directly into the deployment process—ensuring that security scans, compliance checks, privacy safeguards, and fairness assessments are not just afterthoughts, but core components of your automated deployment pipeline.
+%
+% By the end of this presentation, you will have a comprehensive understanding of how to implement advanced deployment automation strategies informed by MLOps best practices, and how to ensure that the ethical standards you established during model training and validation persist and evolve in the real world.
 %%% VOICEOVER OFF
 \maketitle
 
@@ -68,138 +70,356 @@
 % Overview Slide
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Here’s the plan:
+% Let’s outline our journey today. We will be covering four key areas:
 %
-% 1. Continuous Integration/Continuous Deployment (CI/CD): We’ll see how automation (e.g., GitHub Actions) ensures seamless updates and reduces manual errors.
-% 2. Infrastructure Automation: Using Terraform and Docker for scalable, reproducible environments.
-% 3. Ethical Deployment: Incorporate compliance checks, SBOM creation, security scanning, and privacy safeguards into your release pipelines.
-% 4. Putting it all together: A holistic MLOps strategy ensuring your ML pipeline runs smoothly, ethically, and reliably in production.
+% 1. **Advanced CI/CD Pipeline Integration:** Moving beyond simple test-and-deploy pipelines. We’ll discuss how to incorporate gating, canary releases, blue-green deployments, and feature flags to bring fine-grained control, safety, and flexibility to your deployment strategy.
 %
-% Let’s dive into the nuts and bolts of ethical ML deployment.
+% 2. **Infrastructure as Code (IaC) Mastery:** Manually configuring environments is error-prone and slow. Instead, we’ll explore how Terraform, Docker, Kubernetes, and AWS services work together to build reproducible, scalable, and observable infrastructure that you can stand up or tear down with a few commands.
+%
+% 3. **Ethical Deployment in Practice:** We'll examine how to inject security scanning, generating Software Bills of Materials (SBOMs), performing ongoing compliance checks, and enforcing privacy protections seamlessly into your deployment workflow. The idea is to maintain the highest standards of trust and accountability after your model goes live.
+%
+% 4. **Comprehensive MLOps Integration:** Finally, we’ll zoom out and see how these elements fit into a holistic MLOps ecosystem. We’ll show how monitoring, continuous improvement, documentation, governance, and automated rollback strategies ensure that your model—and your entire ML pipeline—remains robust and ethical over time.
+%
+% By mastering these aspects, you won’t just be deploying functional models—you’ll be deploying models that users can trust, regulators can approve, and that can gracefully adapt to changing conditions.
 %%% VOICEOVER OFF
 \begin{frame}{What We’ll Cover Today}
 \begin{itemize}
-\item CI/CD pipeline integration for streamlined updates
-\item Infrastructure automation with Terraform, Docker, and AWS
-\item Ethical deployment: security, compliance, SBOMs, privacy considerations
-\item A holistic MLOps approach linking all pipeline stages
+\item **CI/CD Pipeline Integration**: Expert-level continuous deployment strategies
+\item **Infrastructure Automation**: Terraform, Docker, Kubernetes, AWS for reproducible, on-demand environments
+\item **Ethical Deployment**: Security-by-default, SBOM creation, compliance checks, privacy safeguards
+\item **Holistic MLOps**: Linking all stages for continuous trust, improvement, and accountability
 \end{itemize}
 
 \vspace{0.8em}
-\emph{From code to customers, we’ll ensure ethical, secure, and scalable model delivery.}
+\emph{From cutting-edge CI/CD to full-stack ethical oversight—this is the future of ML deployment.}
 \end{frame}
 
 %------------------------------------------------------------
-% CI/CD Pipeline Integration
+% CI/CD Pipeline Integration: Expert Insights
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Gone are the days of manual deployments that lead to confusion and downtimes. CI/CD pipelines continuously integrate new code, run automated tests, and if all checks pass, deploy updates seamlessly.
+% Let’s begin with CI/CD pipelines. Many teams start with a simple setup: you push code, tests run, and if all pass, the new model version goes to production. While that’s a fine starting point, it’s insufficient for complex ML systems where models may significantly impact user experience, fairness, or regulatory compliance.
 %
-% Tools like GitHub Actions orchestrate these steps automatically. Whenever you push a change, tests run, security scans occur, and deployments follow suit. This consistency builds confidence and lets your team move faster without sacrificing quality.
+% Advanced CI/CD involves gated pipelines—requiring a human in the loop for sensitive changes or automatically halting deployment if certain fairness metrics degrade. For example, you might have a step that checks for model drift or bias. If the model’s performance against certain protected user groups falls below a threshold, the pipeline stops, preventing a problematic model from going live.
 %
-% CI/CD isn’t just a technical convenience—it’s about delivering value to users rapidly, ensuring that improvements and ethical safeguards reach production as soon as they’re ready.
+% Canary deployments allow you to test new model versions on a small subset of users before fully rolling it out. This ensures you don’t introduce regressions or biases at scale, and if something goes wrong, you can revert instantly.
+%
+% Feature flags provide dynamic control over your system’s functionality. You can toggle features or model endpoints on and off without redeploying, enabling rapid experimentation while maintaining ethical and performance constraints.
+%
+% By integrating these advanced techniques, your CI/CD pipeline isn’t just a release mechanism—it becomes an intelligent, ethical guardian of your production environment.
 %%% VOICEOVER OFF
-\begin{frame}{CI/CD Pipeline Integration}
+\begin{frame}{CI/CD Pipeline Integration (Advanced Techniques)}
 \begin{itemize}
-\item Automate code integration, testing, and deployment with GitHub Actions
-\item Trigger pipelines on commits or pull requests, ensuring continuous feedback
-\item Rapid, reliable releases that keep models current and aligned with ethical standards
+\item **Gated Pipelines**: Require human or AI-driven approvals at critical steps
+\item **Canary Deployments \& Blue-Green Strategies**: Roll out changes gradually, revert instantly if anomalies arise
+\item **Feature Flags**: Dynamically control features in production for safe experimentation
+\item **Automated Bias \& Drift Checks**: Integrate fairness and stability metrics directly into pipeline gating
 \end{itemize}
 
-\vspace{0.8em}
-\emph{CI/CD brings agility and trustworthiness, reducing risk and manual effort.}
-
-% [OPTIONAL IMAGE HERE: GitHub Actions workflow diagram]
+\emph{CI/CD now becomes a guardrail for quality, ethics, and continuous improvement.}
 \end{frame}
 
 %------------------------------------------------------------
-% Infrastructure Automation
+% Example CI/CD Workflow
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Deploying ML models isn’t just about the model files—it’s about servers, containers, load balancers, databases, and more. Infrastructure automation tools like Terraform let you define infrastructure as code. This ensures your environments are consistent, repeatable, and scalable.
+% Let’s look at a practical example of a CI/CD workflow using GitHub Actions.
 %
-% Docker containers package your model with its dependencies, guaranteeing it runs identically from dev to production. Terraform provisions AWS resources effortlessly, while Hugging Face Spaces can host user-friendly model interfaces.
+% Imagine you have a repository hosting both your model code and infrastructure configuration. When you push changes to the main branch (after code reviews and approvals), the pipeline triggers automatically. It starts by checking out the code, running unit tests, integration tests, and also specialized tests for bias detection. Suppose you have a Python script that measures disparate impact or equalized odds metrics on a sample dataset. If the fairness metrics degrade beyond a certain threshold, the pipeline fails.
 %
-% By automating infrastructure, we eliminate config drift, speed up scaling, and maintain a predictable environment for our ethical ML solutions.
+% Next, it runs a security scan using a tool like Trivy, scanning all dependencies. If any high-severity vulnerabilities are found, the deployment stops. If all is good, it builds a Docker image, pushes it to a container registry, and applies a Kubernetes configuration for a canary deployment. This canary deployment exposes the new model version to maybe 1% of real traffic.
+%
+% You then have a step that collects canary performance and bias metrics from a monitoring endpoint. If these metrics are stable and meet your service level objectives and ethical thresholds, the pipeline promotes the canary version to full production. Finally, it updates the SBOM for transparency.
+%
+% This workflow ensures every deployment is thoroughly vetted for performance, security, fairness, and compliance before reaching all users.
 %%% VOICEOVER OFF
-\begin{frame}{Infrastructure Automation}
-\begin{itemize}
-\item Use Terraform for Infrastructure as Code: reproducible, version-controlled setups
-\item Docker for containerization: consistent runtime environments
-\item AWS integration: scalable, secure cloud deployments with minimal friction
-\end{itemize}
+\begin{frame}{Practical CI/CD Example}
+\begin{minted}[fontsize=\small]{yaml}
+name: CI/CD Pipeline
 
-\vspace{0.8em}
-\emph{Infrastructure automation ensures stable foundations for reliable and ethical ML services.}
+on:
+  push:
+    branches: [ main ]
 
-% [OPTIONAL IMAGE HERE: Terraform + Docker + AWS icons together]
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run tests (unit/integration/bias)
+        run: |
+          pytest tests/ --cov
+          python run_bias_checks.py
+
+      - name: Security Scan
+        run: trivy fs .
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t registry/model:latest .
+          docker push registry/model:latest
+
+      - name: Canary Deployment
+        run: kubectl apply -f k8s/canary-deployment.yaml
+
+      - name: Validate Canary
+        run: python check_canary_metrics.py # ensures no fairness degradation
+\end{minted}
+
+\emph{This pipeline ensures continuous trustworthiness, security, and fairness with minimal human overhead.}
 \end{frame}
 
 %------------------------------------------------------------
-% Ethical Deployment Considerations
+% Infrastructure Automation: Advanced Practices
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Deployment isn’t just about functionality—it’s about doing the right thing. Ethical deployment means embedding security, compliance, and privacy checks into your pipeline.
+% Once your CI/CD pipeline is set, the next challenge is ensuring that what you deploy runs in a stable, reproducible environment. Traditionally, ops teams configured servers by hand, which led to inconsistency and drift over time. With Infrastructure as Code (IaC), you define your infrastructure in code—Terraform files, Helm charts, Kubernetes manifests—and store these definitions in version control.
 %
-% Security scanning tools detect vulnerabilities before models hit production. Attestation processes verify component integrity. Software Bill of Materials (SBOM) lists every dependency, boosting transparency and trust.
+% Terraform can provision AWS resources like VPCs, EC2 instances, load balancers, or EKS clusters for Kubernetes. By combining Terraform with Docker and Kubernetes, you gain a standardized environment that’s easy to replicate, scale, and maintain. If you need a temporary environment to test a major update, you can stand up an identical environment with a single command, run tests, and then destroy it when done.
 %
-% Compliance checks ensure adherence to laws and industry standards. Privacy safeguards protect user data throughout deployment and operations. By integrating these steps, we ensure our model deployments uphold ethical and legal expectations.
+% Docker provides containerization, ensuring that your application’s environment is consistent everywhere, from a developer’s laptop to production. Kubernetes then orchestrates these containers, ensuring scalability, self-healing, and easy rollbacks.
+%
+% This approach reduces “works on my machine” issues and makes scaling to meet real-world demands straightforward. It also integrates seamlessly with your CI/CD pipeline, enabling truly continuous delivery.
 %%% VOICEOVER OFF
-\begin{frame}{Ethical Deployment: Security \& Compliance}
+\begin{frame}{Infrastructure Automation (IaC)}
 \begin{itemize}
-\item Automated security scans identify vulnerabilities early
-\item SBOM creation ensures transparency of all components \& dependencies
-\item Compliance checks enforce privacy laws (e.g., GDPR) and industry regulations
+\item **Terraform**: Version-controlled, reproducible infrastructure definitions
+\item **Docker + Kubernetes**: Container orchestration for scalable, consistent runtimes
+\item **AWS Integrations**: Auto-scaling, managed ML services, minimal manual intervention
+\item **Ephemeral Environments**: Spin up production-like test environments on-demand
 \end{itemize}
 
-\vspace{0.8em}
-\emph{Ethical deployment safeguards trust, protects user rights, and prevents damaging missteps.}
-
-% [OPTIONAL IMAGE HERE: Shield icon or SBOM diagram]
+\emph{IaC ensures reliability, scalability, and agility—foundation stones of MLOps excellence.}
 \end{frame}
 
 %------------------------------------------------------------
-% Integrating with MLOps Practices
+% Ethical Deployment: Security, SBOM, Compliance
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% MLOps unites everything we’ve learned so far: from ethical data handling, automated training, and fair models to seamless deployment automation and compliance.
+% Even a perfectly trained and validated model can fail ethically at deployment. If you neglect security, data privacy, or compliance, your end-users and your organization are at risk.
 %
-% A well-designed MLOps pipeline:
-% - Continuously monitors model performance, fairness metrics, and security health
-% - Rolls out updates incrementally, reducing risk
-% - Logs everything for auditability and accountability
+% Ethical deployment means embedding security scanning and compliance checks directly into your pipeline. Automated vulnerability scanning tools can detect known security issues in your codebase, containers, or dependencies before shipping. Generating an SBOM (Software Bill of Materials) provides a transparent record of every component in your application. This transparency is invaluable for audits, licensing checks, and vulnerability response.
 %
-% By marrying technical reliability with ethical oversight, MLOps ensures our ML pipeline isn’t just a one-time achievement—it’s a living, evolving system that remains trustworthy and beneficial over time.
+% Compliance checks ensure adherence to regulations like GDPR, CCPA, HIPAA, or industry-specific standards. For instance, you can run a script to inspect logs for accidental inclusion of personally identifiable information (PII). If PII is detected, you can alert the team or automatically halt the deployment until it’s resolved.
+%
+% Encryption and access controls further ensure that only authorized parties can handle sensitive data. Implementing the principle of least privilege and ensuring data encryption at rest and in transit helps maintain user trust.
+%
+% By integrating these checks and safeguards into the deployment pipeline, you maintain ongoing compliance and ethical standards, rather than just a one-time compliance sign-off.
 %%% VOICEOVER OFF
-\begin{frame}{A Holistic MLOps Strategy}
+\begin{frame}{Security, SBOM, Compliance (Ethical Deployment)}
 \begin{itemize}
-\item Continuous monitoring: track model drift, fairness shifts, and performance drops
-\item Incremental updates: roll out changes gradually, gathering feedback safely
-\item Comprehensive documentation and audits: maintain transparency, accountability
+\item **Security Scanning**: Automated vulnerability checks in CI/CD
+\item **SBOM Generation**: Document all components for easy audits and traceability
+\item **Compliance Scripts**: Automated checks against privacy laws (e.g., GDPR), industry norms, and internal ethics policies
+\item **Encryption \& Access Controls**: Ensure privacy and data protection by default
 \end{itemize}
 
-\vspace{0.8em}
-\emph{MLOps weaves ethics into the fabric of operations, ensuring long-term trust and value.}
+\emph{Ethical deployment safeguards end-users, the company’s reputation, and societal trust in AI.}
+\end{frame}
+
+%------------------------------------------------------------
+% Integrating Compliance and Security in MLOps
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Consider a scenario where your model logs could contain user emails or other sensitive details due to a code oversight. A continuous compliance check could run regularly, scanning logs for PII. If any violation is detected, it can trigger an alert to the compliance team or even rollback the deployment automatically until the issue is resolved.
+%
+% Similarly, bias metrics can be monitored continuously. If a particular user segment starts to receive disproportionately negative predictions—perhaps due to data drift or a subtle bug—the system can alert maintainers or revert to a previously fairer model version.
+%
+% This continuous monitoring ensures compliance is not a static milestone you hit once, but an ongoing state. The pipeline and monitoring tools become your compliance officers, regularly confirming that all systems remain within agreed-upon ethical and legal bounds.
+%%% VOICEOVER OFF
+\begin{frame}{Continuous Compliance in Practice}
+\begin{minted}[fontsize=\small]{python}
+import requests
+
+def check_privacy_violations(log_endpoint):
+    logs = requests.get(log_endpoint).json()
+    for entry in logs:
+        if "@" in entry.get("message", ""):
+            alert_team("Possible PII leakage")
+
+def check_bias_metrics(metric_endpoint):
+    metrics = requests.get(metric_endpoint).json()
+    if metrics['disparate_impact'] < 0.8:
+        trigger_rollback("Bias threshold violated")
+\end{minted}
+
+\emph{Compliance isn’t static—it’s a continuous, monitored state enforced by automation.}
+\end{frame}
+
+%------------------------------------------------------------
+% Holistic MLOps: Linking All Stages
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Now let’s integrate all these components into a holistic MLOps ecosystem. A robust MLOps framework isn’t just about one part of the lifecycle; it’s about ensuring that from the moment you conceive the model to the moment it’s serving thousands of requests per minute, you have complete visibility, auditability, and adaptability.
+%
+% Model registries store different versions of your models along with metadata, training data hashes, and lineage information. Continuous monitoring tools watch model performance, latency, and fairness metrics in real-time. If something goes wrong—if performance degrades or new fairness concerns arise—automated rollback procedures can revert the system to a safer model version.
+%
+% Governance and documentation ensure that any model entering production has passed through clear ethical guidelines and approval workflows. Every deployment leaves an audit trail: who approved it, what metrics were checked, what compliance standards were verified. Over time, this builds an institutional memory that can guide model improvements and help meet regulatory audits with confidence.
+%
+% By treating ethics, compliance, and performance as first-class citizens throughout the entire MLOps pipeline, you create a cycle of continuous improvement. Your models don’t just remain functional; they evolve ethically and responsibly, even as conditions change.
+%%% VOICEOVER OFF
+\begin{frame}{A Complete MLOps Ecosystem}
+\begin{itemize}
+\item **Model Registry & Lineage**: Track every model version, training data snapshot, and config
+\item **Continuous Monitoring & Alerting**: Real-time insights into performance, fairness, and compliance metrics
+\item **Automated Rollback & Incident Response**: Swift remediation when issues are detected
+\item **Governance & Documentation**: Codify ethical guidelines, approval workflows, and maintain transparent decision logs
+\end{itemize}
+
+\emph{A robust MLOps ecosystem evolves gracefully, respecting ethical, legal, and performance expectations.}
+\end{frame}
+
+%------------------------------------------------------------
+% Practical Code Examples: Bias Check
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Let’s look at a small code snippet to illustrate how you might implement a quick bias check locally. While this is a simplistic example, it shows how easy it is to integrate bias detection logic into your pipeline.
+%
+% Imagine a dataset with predictions, actual labels, and a sensitive attribute column (like group membership). We calculate error rates by group. If the error rate difference between groups exceeds a certain threshold, we flag potential bias. You could expand this logic to test for various fairness metrics like disparate impact, equalized odds, or predictive parity.
+%
+% Integrating such scripts into your CI/CD means the model will not deploy if it exhibits potentially harmful bias. This enforces fairness as a mandatory quality gate.
+%%% VOICEOVER OFF
+\begin{frame}{Hands-On: Quick Bias Check (Python)}
+\begin{minted}[fontsize=\small]{python}
+import pandas as pd
+
+# Sample data: predictions, actuals, and a sensitive attribute (group)
+data = pd.DataFrame({
+    'prediction': [1, 0, 1, 1, 0, 0],
+    'actual':     [1, 0, 0, 1, 0, 1],
+    'group':      ['A','A','B','B','B','A']
+})
+
+error_rates = data.assign(
+    error=lambda df: df['prediction'] != df['actual']
+).groupby('group')['error'].mean()
+
+print("Error rates by group:")
+print(error_rates)
+
+threshold = 0.2
+if (error_rates.max() - error_rates.min()) > threshold:
+    print("⚠️ Potential bias detected.")
+else:
+    print("✅ No significant bias detected.")
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Practical Code Examples: Compliance Check
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Here’s a simple compliance check that scans logs for email addresses. In a real scenario, you would look for more forms of PII or sensitive identifiers. If any are found, you might notify the compliance officer or halt the pipeline. This ensures that any accidental leakage of user data is caught before becoming a serious legal or reputational issue.
+%%% VOICEOVER OFF
+\begin{frame}{Hands-On: Simple Compliance Check (Python)}
+\begin{minted}[fontsize=\small]{python}
+import re
+
+log_file = 'app.log'  # Replace with actual log file path
+email_pattern = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+
+with open(log_file, 'r') as f:
+    logs = f.read()
+
+emails_found = re.findall(email_pattern, logs)
+if emails_found:
+    print("⚠️ PII leakage: Emails found in logs:", emails_found)
+else:
+    print("✅ No PII detected in logs.")
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Practical Code Examples: Terraform
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% A minimal Terraform example might just create a file locally, but in real-world scenarios, you would define AWS resources—clusters, storage, networking—and store these configurations in version control. Running `terraform init` and `terraform apply` would set up your infrastructure identically every time, ensuring consistent testing and deployment environments.
+%%% VOICEOVER OFF
+\begin{frame}{Hands-On: Minimal Terraform Setup (HCL)}
+\begin{minted}[fontsize=\small]{hcl}
+# main.tf
+terraform {
+  required_providers {
+    local = {
+      source = "hashicorp/local"
+    }
+  }
+}
+
+provider "local" {}
+
+resource "local_file" "example" {
+  content  = "Hello, MLOps!"
+  filename = "hello.txt"
+}
+\end{minted}
+
+\emph{Try: \texttt{terraform init \&\& terraform apply}}
+\end{frame}
+
+%------------------------------------------------------------
+% Practical Code Examples: Docker Build & Run
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Containerizing your ML service with Docker ensures that your application’s runtime environment is consistent. Here’s a simple Dockerfile and commands to build and run it locally. In practice, this ML service might serve model predictions via a REST API, or perform batch inference jobs. Docker makes it straightforward to move this service from dev to test to prod without environment discrepancies.
+%%% VOICEOVER OFF
+\begin{frame}{Hands-On: Docker Build \& Run}
+\begin{minted}[fontsize=\small]{docker}
+# Dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY app.py .
+CMD ["python", "app.py"]
+\end{minted}
+
+\begin{minted}[fontsize=\small]{bash}
+# Build and run locally:
+docker build -t my-ml-service .
+docker run -p 5000:5000 my-ml-service
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Docker Flask app example
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Here’s a basic Flask application to complete the example. This simple health check endpoint can form the foundation for a more complex ML inference service. Once containerized, it can be deployed via Kubernetes, integrated into your CI/CD pipeline, and monitored for compliance and performance.
+%%% VOICEOVER OFF
+\begin{frame}{Flask App Example (app.py)}
+\begin{minted}[fontsize=\small]{python}
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/health")
+def health():
+    return {"status": "ok"}
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+\end{minted}
 \end{frame}
 
 %------------------------------------------------------------
 % Conclusion & Next Steps
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% We’ve explored how deployment automation, MLOps practices, and ethical considerations ensure your carefully built models reach users securely, reliably, and fairly.
+% Today, we explored the last mile of the ML lifecycle—deployment—and saw how advanced CI/CD strategies, Infrastructure as Code, continuous compliance checks, and integrated ethical safeguards form a robust MLOps practice. By continuously verifying that your model meets performance, fairness, and security standards, you ensure that user trust is earned and maintained, not just once at launch, but throughout the model’s operational life.
 %
-% Next, we’ll address code quality, security, and the broader ethical implications in ML development. By rounding out these aspects, we ensure that every line of code and every deployment decision respects both technical excellence and human values.
+% In our next presentation, we’ll focus even more on code quality and security practices in ML development, and we’ll consider the broader ethical implications of building and deploying AI at scale. As the complexity of AI systems grows, so does the importance of building them on a solid ethical and technical foundation.
 %
-% Together, these steps ensure that the ML solutions we bring to production embody innovation, integrity, and positive social impact.
+% Thank you for attending. By integrating technical rigor with ethical principles, we create ML systems that are not only innovative and efficient, but also trustworthy, transparent, and aligned with societal values.
 %%% VOICEOVER OFF
 \begin{frame}{Next Steps}
 \begin{itemize}
-\item Next Presentation: Code Quality, Security \& Ethical Implications in ML Development
-\item Strengthening the final layer of assurance and responsibility
+\item **Next Presentation**: Code Quality, Security & Ethical Implications in ML Development
+\item Strengthen code standards, security postures, and ethically aware engineering workflows
 \end{itemize}
 
-\vspace{0.8em}
-\emph{With our pipeline set, let’s refine quality, security, and ethical codes for truly responsible AI.}
+\emph{We’ve set a high bar for deployment; let’s ensure our code and ethical frameworks are equally robust.}
 \end{frame}
 
 \end{document}

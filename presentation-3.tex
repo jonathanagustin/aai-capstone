@@ -1,6 +1,6 @@
 \documentclass[aspectratio=169]{beamer}
 
-% Modern theme & fonts
+% Modern theme & fonts with T1 encoding
 \usetheme{metropolis}
 \usefonttheme{professionalfonts}
 \usepackage[T1]{fontenc}
@@ -20,7 +20,7 @@
 \makeatletter
 \setbeamertemplate{frametitle}{
   \nointerlineskip%
-  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}%
     \usebeamerfont{frametitle}\insertframetitle\par%
     \if\insertframesubtitle\relax%
     \else%
@@ -45,8 +45,8 @@
 \usemintedstyle{friendly}
 \usepackage{menukeys}
 
-\title{Automating Model Training \& Ensuring Ethical Model Development}
-\subtitle{AI Masters Capstone Project - Presentation 3}
+\title{Data Preparation \& Ethical Data Handling}
+\subtitle{AI Masters Capstone Project - Presentation 2}
 \author{Jonathan Agustin}
 \date{November 2024}
 
@@ -56,11 +56,12 @@
 % Title Slide
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Welcome back. Previously, we laid the groundwork with ethical data handling and a robust approach to preprocessing. Now, let’s take the next step: automating model training and ensuring that each model we build respects human values.
-%
-% Model training shouldn’t be a tedious, manual process. By automating training and hyperparameter tuning, we free ourselves from grunt work. But automation alone isn’t enough—we must also ensure transparency, explainability, and fairness at the model level.
-%
-% In this presentation, we’ll see how to integrate these ethical considerations into model development, from versioning and experiment tracking to building interpretable and equitable models. Let’s dive in.
+% Welcome to our deep dive into building not just ethical and automated ML pipelines, but truly expert-level data workflows.
+% Last time, we established the importance of automation and ethics in ML. Today, we’ll elevate these concepts further:
+% - We’ll reveal “power moves” in data cleaning, from advanced transformations to reproducible and transparent workflows.
+% - We’ll discuss how to incorporate privacy and fairness from day one, avoiding common pitfalls that often surface only after a product launches.
+% - We’ll also revisit the art and science of building validation sets, referencing Rachel Thomas (2017), but now focusing on the subtle, high-leverage strategies the top ML practitioners rely on.
+% Let’s dive in and ensure our data handling not only meets standards but sets new ones.
 %%% VOICEOVER OFF
 \maketitle
 
@@ -68,185 +69,351 @@
 % Overview Slide
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Here’s our agenda:
+% Today’s agenda focuses on advanced strategies and hidden gems of data preparation:
+% 1. Going beyond basics: embedding ethical principles deep into data pipelines.
+% 2. Expert-level preprocessing: pipeline reproducibility, monitoring, and clever feature engineering.
+% 3. Data validation “power tools” that catch subtle errors before they cascade downstream.
+% 4. Privacy & compliance tips that surpass mere box-checking—learn how to future-proof for evolving regulations.
+% 5. Building a validation set inspired by Thomas (2017), but with added sophistication: incorporating domain insights, multiple validation splits, and controlled scenario testing.
+% 6. Cutting-edge bias detection and mitigation techniques that adapt as your data and models evolve.
 %
-% 1. We’ll explore how to automate model training, reducing manual chores and enabling efficient hyperparameter optimization.
-% 2. We’ll discuss model versioning and experiment tracking, ensuring reproducibility and trustworthiness in our workflow.
-% 3. We’ll tackle model transparency and explainability, seeing how to make complex models understandable.
-% 4. We’ll address the crucial topic of fairness in model outcomes, ensuring that our ML solutions treat all user groups equitably.
-%
-% By the end, you’ll know how to craft ML models that are not only powerful and efficient, but also responsible and worthy of user trust.
+% By the end, you’ll have a toolbox of “insider” moves to ensure your entire ML pipeline is robust, fair, and aligned with real-world conditions.
 %%% VOICEOVER OFF
 \begin{frame}{What We’ll Cover Today}
 \begin{itemize}
-\item Automating model training: efficient pipelines, hyperparameter optimization
-\item Model versioning \& experiment tracking: ensuring reproducibility
-\item Transparent \& explainable AI: building user trust
-\item Fairness in AI models: evaluating \& mitigating biases
+\item Embedding ethics and fairness at the pipeline level
+\item Advanced automated preprocessing: beyond missing values
+\item Rigorous data validation: schema enforcement + anomaly detection
+\item Future-proofed privacy \& compliance (e.g., GDPR and beyond)
+\item Expert validation set design (Thomas, 2017) for real-world resilience
+\item Next-level bias detection and rebalancing strategies
 \end{itemize}
 
 \vspace{0.8em}
-\emph{From raw code to final model deployments, ethics and efficiency guide our steps.}
+\emph{We’re moving from “good enough” to elite data practices that anticipate tomorrow’s challenges.}
 \end{frame}
 
 %------------------------------------------------------------
-% Automating Model Training Intro
+% Importance of Ethical Data Handling
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Manual model training can feel like a never-ending cycle—tweak a parameter, run a script, wait, repeat. Let’s break that cycle with automation.
-%
-% Automated training pipelines run experiments, adjust hyperparameters, and track results systematically. This leads to more consistent, data-driven improvements rather than guesswork.
-%
-% With automation, data scientists focus on strategic decisions, not repetitive trials, accelerating innovation while maintaining reliable, repeatable processes.
+% Ethical data handling is not just compliance—it's your competitive advantage. Leading ML teams know that public trust is hard to earn and easy to lose.
+% By weaving ethics into every data decision, you elevate quality, reputation, and user confidence.
+% Expert tip: Proactively consult domain experts (legal, social sciences, policy) early. Preempt legal headaches and PR crises by getting it right the first time.
 %%% VOICEOVER OFF
-\begin{frame}{Automating Model Training}
+\begin{frame}{Ethical Data Handling Matters}
 \begin{itemize}
-\item Reduce manual iteration: automate data loading, training, validation steps
-\item Integrate hyperparameter search methods (grid, random, Bayesian) seamlessly
-\item Create reproducible pipelines that encourage systematic improvement
+\item Data isn’t just numbers—it’s people’s lives and societal narratives.
+\item Anticipate downstream impacts: prevent models that discriminate or misinform.
+\item Build trust: ethical data stewardship differentiates you in a crowded market.
+\item **Pro tip:** Involve domain and ethics experts from project inception, not as an afterthought.
 \end{itemize}
 
-\vspace{0.8em}
-\emph{Automation frees us to concentrate on meaningful insights and better outcomes.}
-
-% [OPTIONAL IMAGE HERE: Pipeline icon representing automated training steps]
+\emph{Ethics done expertly: a strategic investment, not a cost.}
 \end{frame}
 
 %------------------------------------------------------------
-% Hyperparameter Optimization
+% Automated Data Preprocessing: Advanced Insights
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Hyperparameters—learning rates, regularization strengths, network depths—can make or break model performance. Finding the right combination by hand is tedious.
-%
-% Automated hyperparameter optimization (HPO) tools explore the search space smartly. Bayesian optimization, for example, learns from previous trials to propose better settings over time.
-%
-% By automating HPO, we find better models faster, with less guesswork and a clear log of what we tried and why.
+% Moving beyond basic cleaning:
+% - Standardization is table stakes. Top teams integrate advanced transformations, like domain-aware feature scaling, automated feature selection, and dynamic pipeline scripts that adapt to new data.
+% - Store all preprocessing parameters in version control for full reproducibility. Consider using tools like DVC, MLflow, or Great Expectations for monitoring data quality over time.
+% - Embrace modular pipelines: break down cleaning steps into reusable, documented components.
 %%% VOICEOVER OFF
-\begin{frame}{Hyperparameter Optimization}
+\begin{frame}{Automated Preprocessing “Power Moves”}
 \begin{itemize}
-\item Use automated search strategies (Bayesian, genetic algorithms) to tune hyperparams
-\item Track performance at each trial, building knowledge over time
-\item Achieve superior models with fewer manual experiments
+\item Dynamic and modular pipelines: easy to update when data schema evolves
+\item Parametrized transformations: track imputation strategies, encoders, scalers in version control
+\item CI/CD integration: automated checks prevent subtle data drifts from reaching production
+\item Advanced transformations: leverage domain knowledge to engineer more predictive features from raw inputs
 \end{itemize}
 
-\vspace{0.8em}
-\emph{Smart HPO transforms trial-and-error into a guided search for excellence.}
-
-% [OPTIONAL IMAGE HERE: Optimization curve or grid search illustration]
+\emph{Set up your pipeline so that improvements flow seamlessly, without reinventing the wheel.}
 \end{frame}
 
 %------------------------------------------------------------
-% Model Versioning & Experiment Tracking
+% Techniques for Data Cleaning and Transformation (Enhanced)
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Without careful versioning and tracking, ML experimentation can become a chaotic mess: Which model did we train last Tuesday? Which hyperparameters produced that promising result?
-%
-% Versioning tools (like Git or dedicated ML experiment trackers) ensure every code change, every parameter tweak, and every dataset variant is recorded. Experiment tracking platforms (e.g., MLflow) let us log metrics, compare runs, and revisit past experiments easily.
-%
-% This reproducibility builds trust. If we find biases later, we can trace back to a specific training run and understand what happened.
+% Consider a scenario: you not only impute missing values but also log data drift, document changes, and automatically retrain imputers as distributions shift.
+% Introduce advanced encodings (like target encodings) and combine them with strict validation rules. By doing so, you maintain a self-correcting pipeline that grows smarter over time.
 %%% VOICEOVER OFF
-\begin{frame}{Model Versioning \& Experiment Tracking}
-\begin{itemize}
-\item Tag each model, dataset, and parameter set for easy reference
-\item Log metrics, outcomes, and conditions for every run (e.g., MLflow)
-\item Instantly reproduce past experiments, fostering accountability and trust
-\end{itemize}
+\begin{frame}{Practical Preprocessing Techniques (Expert-Level)}
+\begin{minted}[fontsize=\small]{python}
+import pandas as pd
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+# Consider advanced encoders from category_encoders
+from category_encoders import TargetEncoder
+import mlflow
 
-\vspace{0.8em}
-\emph{A well-documented history of experimentation ensures transparency and continual learning.}
+df = pd.read_csv("raw_data.csv")
 
-% [OPTIONAL IMAGE HERE: Version control branching diagram or MLflow UI snapshot]
+# Log data schema version
+mlflow.set_experiment("data_preprocessing")
+with mlflow.start_run():
+    mlflow.log_param("raw_data_shape", df.shape)
+
+numeric_cols = df.select_dtypes(include=['float','int']).columns
+imputer = SimpleImputer(strategy='median')
+df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+
+categorical_cols = df.select_dtypes(include=['object']).columns
+# Advanced encoding: TargetEncoder for high-cardinality features
+encoder = TargetEncoder(cols=categorical_cols)
+df[categorical_cols] = encoder.fit_transform(df[categorical_cols], df['target_variable'])
+
+scaler = StandardScaler()
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+
+mlflow.log_metric("post_imputation_missing", df.isnull().sum().sum())
+mlflow.end_run()
+\end{minted}
+
+\emph{By logging parameters and metrics, you track performance and data shifts over time—like pros do.}
 \end{frame}
 
 %------------------------------------------------------------
-% Transparent & Explainable AI
+% Data Validation and Quality Assurance (Advanced)
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% As models grow complex (deep networks, ensembles), their decision-making can become a black box. How do we trust something we can’t understand?
-%
-% Explainability techniques like SHAP and LIME generate insights into which features drive predictions. Transparency tools can highlight how a model treats different inputs, ensuring no hidden agendas lurk inside.
-%
-% By making models interpretable, we empower stakeholders—users, regulators, and ourselves—to trust and adopt ML solutions confidently. When people understand “why,” they’re more likely to accept “what.”
+% Beyond checking schemas, expert practitioners run anomaly detection (e.g., isolation forests), statistical sanity checks, and rules that adapt as the business logic evolves.
+% Use tools like Great Expectations or pandera with CI/CD so that any unexpected data gets flagged before it hits production models.
+% Consider multiple validation tiers: from schema checks to domain-driven outlier detection.
 %%% VOICEOVER OFF
-\begin{frame}{Transparent \& Explainable AI}
-\begin{itemize}
-\item Apply tools like SHAP, LIME to clarify model decisions
-\item Visualize feature importances \& decision pathways
-\item Enhance stakeholder trust by revealing the reasoning behind predictions
-\end{itemize}
+\begin{frame}{Data Quality Assurance: Advanced Strategies}
+\begin{minted}[fontsize=\small]{python}
+import pandera as pa
+from pandera.typing import DataFrame, Series
+from pandera import Check
 
-\vspace{0.8em}
-\emph{When ML decisions are understandable, we foster trust, alignment, and responsible use.}
+class InputSchema(pa.SchemaModel):
+    age: Series[int] = pa.Field(ge=0, le=120)
+    income: Series[float] = pa.Field(ge=0)
+    # Add dynamic checks that reference domain insights
+    target_variable: Series[int] = pa.Field(in_values=[0,1])
 
-% [OPTIONAL IMAGE HERE: Model explanation graphs or SHAP value plot]
+    class Config:
+        strict = True
+
+# Add anomaly checks for advanced validation
+schema = InputSchema.to_schema().add_checks(
+    Check(lambda df: df['income'].mean() < 1e6,
+          error="Average income suspiciously high")
+)
+
+try:
+    validated_df = schema.validate(df)
+except pa.errors.SchemaError as e:
+    print("Data validation failed:", e)
+    # Integrate with alerting systems (PagerDuty, Slack)
+\end{minted}
+
+\emph{Expert-level validation: layered checks, domain logic, automated alerts.}
 \end{frame}
 
 %------------------------------------------------------------
-% Fairness in AI Models
+% Creating a Good Validation Set (Thomas, 2017) - Expert Take
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% Even an expertly trained model can be unfair if trained on biased data or if it treats certain groups differently. We must measure and ensure fairness, not just accuracy.
-%
-% Evaluate outcomes across demographic groups, check parity, and run specialized fairness metrics. If disparities appear, consider techniques like re-weighting data, adjusting model constraints, or post-processing predictions.
-%
-% Fairness audits help identify and correct biases before models harm users. Building fair models isn’t just an ideal—it’s a social responsibility.
+% Rachel Thomas (2017) offers the core principle: validation sets must reflect future conditions.
+% Expert approach:
+% - Use multiple validation sets, each simulating a different future scenario (time-based splits, new user segments, unexpected domain shifts).
+% - Continuously reassess the validation scheme as the product context evolves.
+% - Integrate domain expertise: if future data may come from a new geography, include it in validation scenarios even before the data fully arrives.
 %%% VOICEOVER OFF
-\begin{frame}{Fairness in AI Models}
+\begin{frame}{Crafting Expert-Level Validation Sets (Thomas, 2017)}
 \begin{itemize}
-\item Check metrics like demographic parity, equality of odds for different groups
-\item Apply interventions (re-sampling, constraints) to reduce unfair outcomes
-\item Continuously monitor fairness, ensuring changes don’t reintroduce bias
+\item Multiple “scenario-based” validation sets, not just one
+\item Time-based splits that reflect production roll-out schedules
+\item Varying user cohorts to mimic new demographics or products
+\item Regularly refresh validation sets as data distribution drifts
 \end{itemize}
 
-\vspace{0.8em}
-\emph{Fair models reflect our commitment to justice, equity, and ethical innovation.}
-
-% [OPTIONAL IMAGE HERE: Balanced scale comparing two sets of model predictions]
+\emph{Top teams treat validation sets as living assets—continuously improved for maximum realism.}
 \end{frame}
 
 %------------------------------------------------------------
-% Integrating Ethics into Training
+% When Random Subsets Are Not Enough: Advanced Scenarios
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% We’ve learned how to automate training, track experiments, explain models, and ensure fairness. Now, let’s integrate all these pieces into one holistic approach.
-%
-% An ethical training pipeline:
-% - Automates model runs and hyperparameter tuning
-% - Logs every detail for accountability and reproducibility
-% - Applies explainability methods to demystify black-box decisions
-% - Enforces fairness metrics and interventions where needed
-%
-% This synergy creates models that are not only top-performers but also transparent, equitable, and principled.
+% Go beyond just time-based or new-entity splits:
+% - Integrate stress tests: artificially remove certain feature distributions to see if the model can handle unpredictable future changes.
+% - Perform “jackknife” validations where you systematically leave out certain cohorts to test model robustness.
+% - Monitor performance not just overall, but per-segment, ensuring fairness across all user groups.
 %%% VOICEOVER OFF
-\begin{frame}{A Holistic Model Development Approach}
+\begin{frame}{Beyond Random Splits: Pro-Level Validation (Thomas, 2017)}
 \begin{itemize}
-\item Combine automation, tracking, explainability, and fairness measures seamlessly
-\item Document the entire workflow, from preprocessing to final model
-\item Align performance with ethical principles for responsible ML innovation
+\item **Stress Testing**: Remove entire feature segments to simulate sensor failures or data pipeline downtime.
+\item **Cohort-Based Validation**: Validate on subsets representing future strategic markets or demographics.
+\item **Multi-Stage Validation**: Incrementally reveal validation data, mirroring real-time production data arrival.
 \end{itemize}
 
-\vspace{0.8em}
-\emph{The result: models you can trust, understand, and be proud to deploy.}
+\emph{Such techniques yield resilience and maintain trust as conditions evolve.}
+\end{frame}
+
+%------------------------------------------------------------
+% Practical Examples: Enhanced Realism
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Example:
+% - For a time series forecasting model, build multiple validation windows rolling forward in monthly increments. Compare stability over time.
+% - For a recommender system expecting new product lines, create a validation set that excludes these items from training entirely, ensuring the model can adapt.
+% - Periodically swap out validation sets to reflect seasonal changes.
+%%% VOICEOVER OFF
+\begin{frame}{Practical Expert-Level Examples (Thomas, 2017)}
+\begin{itemize}
+\item **Time Series**: Rolling window validations (e.g., train on Jan–May, validate on June; then train on Feb–June, validate on July, etc.)
+\item **New Entities**: Introduce synthetic "unseen" products or users to test model adaptability.
+\item **Domain Shifts**: Create scenario-based validations if you anticipate policy changes, new competitor products, or economic downturns.
+\end{itemize}
+
+\emph{Master-level validation ensures future-readiness and stable performance in a dynamic world.}
+\end{frame}
+
+%------------------------------------------------------------
+% Avoiding Overfitting to Public Benchmarks (Kaggle & Beyond)
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% As Thomas (2017) notes, relying solely on a platform’s public leaderboard can lead to subtle overfitting.
+% Expert tips:
+% - Maintain your own robust validation suites that simulate multiple futures.
+% - Don’t chase incremental leaderboard gains that vanish in production. Use domain knowledge and scenario tests to keep the model honest.
+% - Track long-term performance stability instead of one-off leaderboard spikes.
+%%% VOICEOVER OFF
+\begin{frame}{Kaggle & Production: Insider Secrets (Thomas, 2017)}
+\begin{itemize}
+\item Maintain independent validation sets that align with long-term product goals.
+\item Don’t let public leaderboard scores dictate final decisions—correlate with private validation sets.
+\item Regularly “audit” model performance over multiple, evolving validation sets for stable generalization.
+\end{itemize}
+
+\emph{This is how you avoid “trophy overfitting” and achieve genuine real-world impact.}
+\end{frame}
+
+%------------------------------------------------------------
+% Ethical Data Management: Privacy & Compliance - Pro-Level
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Privacy isn’t static. Today’s GDPR might be tomorrow’s stricter regulation.
+% Expert moves:
+% - Build anonymization and compliance checks into the pipeline. Keep them configurable, so you can rapidly adapt to new laws.
+% - Explore differential privacy techniques for sensitive datasets.
+% - Leverage automated auditing: schedule periodic privacy assessments and vulnerability scans.
+%%% VOICEOVER OFF
+\begin{frame}{Privacy Protection: Future-Proof & Flexible}
+\begin{minted}[fontsize=\small]{python}
+import hashlib
+# Hash sensitive IDs
+if 'user_id' in df.columns:
+    df['user_id_hashed'] = df['user_id'].apply(
+        lambda x: hashlib.sha256(str(x).encode()).hexdigest()
+    )
+    df.drop(columns=['user_id'], inplace=True)
+
+# Drop direct PII and consider synthetic data generation if needed
+pii_cols = ['name','email','phone_number']
+df = df.drop(columns=[c for c in pii_cols if c in df.columns])
+
+# Expert tip: integrate a differential privacy library
+# to add statistical noise to sensitive aggregates.
+# e.g., "privacy_engine" from Opacus (for PyTorch)
+\end{minted}
+
+\emph{By designing flexible compliance tools, you stay ahead of evolving regulatory landscapes.}
+\end{frame}
+
+%------------------------------------------------------------
+% Detecting and Mitigating Bias: Cutting-Edge Techniques
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% Beyond basic bias checks:
+% - Continuously monitor bias metrics over time—bias can emerge as data shifts.
+% - Explore advanced reweighting or adversarial debiasing methods.
+% - Test bias across multiple intersectional groups, not just one protected attribute.
+% - Implement bias dashboards that alert when performance disparities worsen.
+%%% VOICEOVER OFF
+\begin{frame}{Bias Detection and Mitigation: Advanced Methods}
+\begin{minted}[fontsize=\small]{python}
+from aif360.datasets import BinaryLabelDataset
+from aif360.algorithms.inprocessing import AdversarialDebiasing
+from aif360.metrics import ClassificationMetric
+
+data = BinaryLabelDataset(
+    favorable_label=1,
+    unfavorable_label=0,
+    df=df,
+    label_names=['approved_loan'],
+    protected_attribute_names=['gender']
+)
+
+# Check intersectional groups if available
+# Use adversarial debiasing to reduce discrimination
+debiasing_model = AdversarialDebiasing(
+    unprivileged_groups=[{'gender':0}],
+    privileged_groups=[{'gender':1}],
+    scope_name='debiasing_model',
+    sess=None
+)
+# Fit this model and evaluate metrics like equalized odds over time
+\end{minted}
+
+\emph{Top practitioners treat bias mitigation as an ongoing process, not a one-time fix.}
+\end{frame}
+
+%------------------------------------------------------------
+% Putting It All Together
+%------------------------------------------------------------
+%%% VOICEOVER ON
+% You now have a blueprint for expert-level data handling:
+% - Ethical principles woven throughout the pipeline.
+% - Advanced preprocessing and validation strategies that embrace complexity and change.
+% - Tailored validation sets that genuinely prepare you for the unknown.
+% - Robust privacy controls and next-gen bias mitigation techniques.
+%
+% This integrated approach ensures your models perform reliably and fairly, even under shifting real-world conditions.
+%%% VOICEOVER OFF
+\begin{frame}{A Holistic, Expert Data Strategy}
+\begin{itemize}
+\item Pipeline as a living system: continuously evolving and improving
+\item Ethical, privacy-first approach as a strategic differentiator
+\item Validation sets as flexible testbeds for future conditions
+\item Bias mitigation as a dynamic, iterative practice
+\end{itemize}
+
+\emph{These tactics don’t just solve problems—they preempt them, ensuring your ML solutions stand the test of time.}
 \end{frame}
 
 %------------------------------------------------------------
 % Conclusion & Next Steps
 %------------------------------------------------------------
 %%% VOICEOVER ON
-% We’ve advanced from data handling into the realm of automated, accountable, and ethically guided model training. Next, we’ll tackle deployment automation and ethical deployment practices, ensuring that our carefully built models reach users securely and responsibly.
-%
-% By integrating ethical and technical best practices into training, we set a strong precedent for the entire ML lifecycle. Ethical AI starts at data and continues through models, deployments, and beyond.
-%
-% Let’s move forward, keeping these values at our core.
+% With these expert-level strategies in place, your data is primed for ethical, robust modeling.
+% In the next session, we’ll dive deeper into automated model training and evaluation, carrying forward the principles of fairness, transparency, and resilience you’ve established in your data pipeline.
 %%% VOICEOVER OFF
 \begin{frame}{Next Steps}
 \begin{itemize}
-\item Next Presentation: Deployment Automation \& Ethical Deployment
-\item Ensuring secure, compliant, user-centered model releases
+\item Next: Automating Model Training \& Ethical Model Evaluation
+\item Connect these expert data strategies to model tuning and monitoring
 \end{itemize}
 
-\vspace{0.8em}
-\emph{From fair data to fair models, we’re shaping AI that serves humanity responsibly.}
+\emph{You’re now ready to build ML pipelines that aren’t just good—they’re world-class.}
+\end{frame}
+
+%------------------------------------------------------------
+% References
+%------------------------------------------------------------
+\begin{frame}{References}
+\footnotesize
+\begin{itemize}
+\item Thomas, R. (2017). \textit{How (and why) to create a good validation set}. Retrieved from \url{https://rachel.fast.ai/posts/2017-11-13-validation-sets/}
+\item \textit{AIF360} toolkit: \url{https://github.com/Trusted-AI/AIF360}
+\item \textit{pandera} library: \url{https://pandera.readthedocs.io/}
+\item GDPR guidelines: \url{https://gdpr.eu/}
+\item Opacus (differential privacy for PyTorch): \url{https://github.com/pytorch/opacus}
+\item Great Expectations (data quality): \url{https://greatexpectations.io/}
+\end{itemize}
 \end{frame}
 
 \end{document}

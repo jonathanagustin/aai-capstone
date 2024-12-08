@@ -1,5 +1,3 @@
-\frametitle{Taskfile Example}
-\begin{minted}{yaml}
 version: '3'
 tasks:
   build:
@@ -11,4 +9,3 @@ tasks:
     deps: [build]
     cmds:
       - pytest tests/
-\end{minted}
