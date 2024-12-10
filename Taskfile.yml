@@ -33,6 +33,7 @@ tasks:
 
   generate:
     desc: "Generate presentation PDF using lualatex"
+    deps: [setup]
     cmds:
       - task: clean
       - latexmk -f -shell-escape -pdf -lualatex -interaction=nonstopmode -output-directory=output presentation-*.tex presentation-extra.tex

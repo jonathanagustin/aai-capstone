@@ -1,8 +1,0 @@
-\beamer@sectionintoc {1}{Setting the Stage}{2}{0}{1}
-\beamer@sectionintoc {2}{Ethical Imperatives and Legal Accountability}{4}{0}{2}
-\beamer@sectionintoc {3}{Automated ML Pipelines: Vision and Tools}{7}{0}{3}
-\beamer@sectionintoc {4}{Real-World Compliance Examples}{11}{0}{4}
-\beamer@sectionintoc {5}{Operation AI Comply: The FTC’s Crackdown}{12}{0}{5}
-\beamer@sectionintoc {6}{Roadmap of the Series}{15}{0}{6}
-\beamer@sectionintoc {7}{Next Steps}{16}{0}{7}
-\beamer@sectionintoc {8}{Closing Thoughts}{18}{0}{8}

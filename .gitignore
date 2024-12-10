@@ -77,6 +77,14 @@ profile_default/
 sdist/
 share/python-wheels/
 target/
+*.aux
+*.fdb_latexmk
+*.fls
+*.nav
+*.snm
+*.synctex.gz
+*.vrb
+*.toc
 var/
 venv.bak/
 venv/
