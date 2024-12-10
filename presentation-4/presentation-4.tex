@@ -1,0 +1,724 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+\usepackage{multicol}
+
+% Metropolis adjustments
+\metroset{progressbar=none, sectionpage=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle\par%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Packages
+\usepackage{minted}
+\usemintedstyle{friendly}
+\setminted{
+    fontsize=\tiny,
+    breaklines=true,
+    frame=single,
+    autogobble
+}
+
+\title{Deployment Automation \& Compliance}
+\subtitle{AI Masters Capstone Project - Presentation 4}
+\author{Jonathan Agustin}
+\date{2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+
+% Welcome to our exploration of MLOps and deployment automation. Building on previous discussions of ethical ML development, we're now addressing the critical challenges of deploying ML systems at scale. We'll show how modern MLOps integrates with ethical considerations to produce pipelines that are both sophisticated and compliant.
+
+\maketitle
+
+%------------------------------------------------------------
+% Overview
+%------------------------------------------------------------
+% We'll look at a modern MLOps architecture integrating CI/CD with model validations, infrastructure automation using containers and Kubernetes, and production operations including monitoring, rollbacks, and performance tuning.
+% Ethical considerations—fairness checks, compliance scanning—will be woven throughout.
+
+\begin{frame}{Modern MLOps Architecture}
+
+% This slide outlines the MLOps architecture: CI/CD with bias checks, Infrastructure-as-Code for reproducibility, and continuous monitoring and rollbacks to maintain quality and trust in production.
+
+\begin{itemize}
+\item CI/CD with automated testing, bias checks, reproducible deployments
+\item Infrastructure Automation (Docker, Kubernetes, IaC) for scalability
+\item Production Ops: monitoring, rollback, performance optimization
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% CI/CD Pipeline Concept Slide
+%------------------------------------------------------------
+% Before we show the CI CD pipeline code, let's discuss what it does. We have a GitHub Actions workflow that triggers on code changes. It sets up a Python environment, installs dependencies, and runs tests. Crucially, it runs model-specific validations and bias checks, and then performs security scanning. If all checks pass, it deploys to a staging environment for final validation.
+% The CI CD pipeline ensures that each commit undergoes rigorous testing—both standard software tests and ML-specific fairness and performance checks. Only models passing these gates move toward deployment. This prevents biased or insecure models from reaching production.
+
+\begin{frame}{CI/CD Pipeline}
+
+
+
+\begin{itemize}
+\item Triggered by code changes (push or pull request)
+\item Runs unit/integration tests, model validation scripts
+\item Checks bias metrics, security scans
+\item Deploys to staging if all checks pass
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% CI/CD Implementation (Part 1)
+%------------------------------------------------------------
+% Here's the first part of the CI/CD YAML. It defines the workflow triggers and sets up the Python environment, installing dependencies and running the initial suite of tests and validations.
+
+\begin{frame}[fragile]{CI/CD Pipeline Code (Part 1)}
+\begin{minted}{yaml}
+name: ML Model Deploy
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% CI/CD Implementation (Part 2)
+%------------------------------------------------------------
+% Next, we install dependencies, run tests, and execute model and bias checks. If these pass, we proceed to security scanning and then consider deployment steps.
+
+\begin{frame}[fragile]{CI/CD Pipeline Code (Part 2)}
+\begin{minted}{yaml}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+
+    - name: Run tests and validation
+      run: |
+        pytest tests/
+        python scripts/validate_model.py
+        python scripts/check_bias.py
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% CI/CD Implementation (Part 3)
+%------------------------------------------------------------
+% With model and bias validations done, we run a security scan. If successful, we deploy to a staging environment for final validation before production.
+
+\begin{frame}[fragile]{CI/CD Pipeline Code (Part 3)}
+\begin{minted}{yaml}
+    - name: Security scan
+      uses: anchore/scan-action@v3
+      with:
+        image: "model-service:${{ github.sha }}"
+        fail-build: true
+        severity-cutoff: high
+
+    - name: Deploy to staging
+      if: github.ref == 'refs/heads/main'
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      run: |
+        echo "$KUBE_CONFIG" > kubeconfig.yaml
+        kubectl --kubeconfig=kubeconfig.yaml apply -f k8s/staging/
+        python scripts/validate_deployment.py --environment staging
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Validation Concept Slide
+%------------------------------------------------------------
+% Next, let's discuss the model validation script conceptually. This Python script checks model performance (accuracy, F1, AUC), fairness across protected groups, and latency thresholds. If any metric fails, it stops deployment. This ensures consistent model quality and ethical standards are enforced automatically.
+
+\begin{frame}{Model Validation}
+
+% The model validation script is a key quality gate. It integrates seamlessly into the CI/CD pipeline, ensuring that no model with degraded fairness or performance sneaks into production.
+
+\begin{itemize}
+\item Checks accuracy, F1, ROC AUC against thresholds
+\item Evaluates fairness: max disparity among groups
+\item Validates latency (p95) not exceeding set limits
+\item Logs results for audit and compliance
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Validation Script (Part 1)
+%------------------------------------------------------------
+% This first part sets up the Model Validator class and defines performance validation against given thresholds. If metrics fail, it returns False, halting the pipeline.
+
+\begin{frame}[fragile]{Model Validation Code (Part 1)}
+\begin{minted}{python}
+from typing import Dict, List
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+
+class ModelValidator:
+    def __init__(self, performance_thresholds: Dict[str,float],
+                 fairness_thresholds: Dict[str,float],
+                 latency_threshold: float):
+        self.performance_thresholds = performance_thresholds
+        self.fairness_thresholds = fairness_thresholds
+        self.latency_threshold = latency_threshold
+        self.validation_results = {}
+
+    def validate_performance(self, y_true: np.ndarray,
+                             y_pred: np.ndarray, y_prob: np.ndarray) -> bool:
+        metrics = {
+            'accuracy': accuracy_score(y_true, y_pred),
+            'roc_auc': roc_auc_score(y_true, y_prob),
+            'f1': f1_score(y_true, y_pred)
+        }
+        self.validation_results['performance'] = metrics
+        return all(metrics[k]>=v for k,v in self.performance_thresholds.items())
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Validation Script (Part 2)
+%------------------------------------------------------------
+% The second part checks fairness by computing max disparity and verifying it's within limits. It also checks latency samples and ensures p95 latency is below a threshold. If all checks pass, the model is considered validated.
+
+\begin{frame}[fragile]{Model Validation Code (Part 2)}
+\begin{minted}{python}
+    def validate_fairness(self, y_true: np.ndarray, y_pred: np.ndarray,
+                          protected_groups: Dict[str, np.ndarray]) -> bool:
+        fairness_metrics={}
+        for gname,mask in protected_groups.items():
+            g_err = np.mean(y_pred[mask]!=y_true[mask])
+            fairness_metrics[gname]=g_err
+        max_disp = max(fairness_metrics.values()) - min(fairness_metrics.values())
+        self.validation_results['fairness']={'max_disparity': max_disp}
+        return max_disp <= self.fairness_thresholds.get('max_disparity',0.2)
+
+    def validate_latency(self, latency_samples: List[float]) -> bool:
+        p95_latency = np.percentile(latency_samples,95)
+        self.validation_results['latency']={'p95': p95_latency}
+        return p95_latency <= self.latency_threshold
+
+    def summarize(self):
+        return self.validation_results
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Docker Optimization Concept Slide
+%------------------------------------------------------------
+% Now, let’s discuss Docker optimization before showing code. The Docker file uses multi-stage builds to minimize image size, a distroless base image for security, and health checks to ensure the model server runs properly. We also set environment variables to control memory and threading, ensuring stable inference performance.
+
+\begin{frame}{Docker Optimization}
+
+% The Docker optimization aims at consistent, secure, and performant runtime environments. This approach ensures reproducibility and reduces "works on my machine" problems.
+
+\begin{itemize}
+\item Multi-stage builds for lean images
+\item Distroless base for security
+\item Health checks, resource env vars
+\item Model artifacts separated from code
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Docker Optimization (Part 1)
+%------------------------------------------------------------
+% This part of the Docker file: a builder stage installs dependencies, while the runtime stage is minimal, copying only what's needed. We define a health check to ensure the service is responsive.
+
+\begin{frame}[fragile]{Dockerfile Code (Part 1)}
+\begin{minted}{dockerfile}
+# Build stage
+FROM python:3.10-slim as builder
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
+
+# Runtime stage
+FROM gcr.io/distroless/python3
+WORKDIR /app
+COPY --from=builder /root/.local /root/.local
+COPY ./src /app/src
+COPY ./models /app/models
+
+ENV PYTHONPATH=/app
+ENV PATH=/root/.local/bin:$PATH
+
+HEALTHCHECK --interval=30s --timeout=30s \
+  --start-period=5s --retries=3 \
+  CMD ["python","src/health_check.py"]
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Docker Optimization (Part 2)
+%------------------------------------------------------------
+% This part sets resource env vars, exposes the port, and runs the main app. The health check script measures latency to confirm service responsiveness. This configuration ensures a stable, predictable environment for ML inference.
+
+\begin{frame}[fragile]{Dockerfile Code (Part 2)}
+\begin{minted}{dockerfile}
+ENV MALLOC_ARENA_MAX=2
+ENV PYTHONUNBUFFERED=1
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+
+EXPOSE 8080
+CMD ["python", "src/main.py"]
+\end{minted}
+
+\begin{minted}{python}
+# health_check.py
+import requests,time
+def check_model_health():
+    start=time.time()
+    resp=requests.get("http://localhost:8080/health",timeout=5)
+    lat=time.time()-start
+    return resp.status_code==200 and lat<=0.5
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Kubernetes Configuration Concept Slide
+%------------------------------------------------------------
+
+% Before showing Kubernetes YAML, let’s discuss the concept. The Deployment sets replica counts, rolling updates for zero downtime, and resource requests for stable performance. We add Prometheus annotations for monitoring and use readiness/liveness probes to ensure that only healthy Pods serve traffic.
+% We'll see the configuration in three parts.
+
+\begin{frame}{Kubernetes Config}
+
+% Kubernetes ensures scalability, resilience, and controlled rollouts. The configuration supports:
+% - Rolling updates and health probes for smooth deployments
+% - Resource management for predictability
+% - Annotations for monitoring integration
+
+\begin{itemize}
+\item Rolling updates, max surge/unavailable
+\item Resource requests/limits for stable performance
+\item Prometheus annotations for observability
+\item PVC for model storage
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Kubernetes Configuration (Part 1)
+%------------------------------------------------------------
+% Here's a Kubernetes configuration that defines the Deployment, specifies replicas, and rolling update strategy. This ensures continuous availability during updates.
+
+\begin{frame}[fragile]{Kubernetes Config (Part 1)}
+\begin{minted}{yaml}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service
+  labels:
+    app: model-service
+    environment: production
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: model-service
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Kubernetes Configuration (Part 2)
+%------------------------------------------------------------
+% This code adds annotations for Prometheus scraping, security context to run as non-root, container image, and health probes. These ensure the service is secure, observable, and stable.
+
+\begin{frame}[fragile]{Kubernetes Config (Part 2)}
+\begin{minted}{yaml}
+  template:
+    metadata:
+      labels:
+        app: model-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: model-server
+        image: model-service:latest
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Kubernetes Configuration (Part 3)
+%------------------------------------------------------------
+% This code sets the Readiness Probe for traffic control and mounts a Persistent Volume Claim for model storage. This ensures the model can be updated independently and the service only serves traffic when ready and healthy.
+
+\begin{frame}[fragile]{Kubernetes Config (Part 3)}
+\begin{minted}{yaml}
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        env:
+        - name: MODEL_PATH
+          value: "/models/current"
+        - name: MONITORING_PORT
+          value: "8080"
+        volumeMounts:
+        - name: model-store
+          mountPath: "/models"
+          readOnly: true
+      volumes:
+      - name: model-store
+        persistentVolumeClaim:
+          claimName: model-store-pvc
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Monitoring System Concept Slide
+%------------------------------------------------------------
+% Next, the monitoring system concept. We use Prometheus and custom metrics for ML workloads: latency histograms, error counters, drift gauges, accuracy and fairness metrics. Real-time monitoring allows rapid detection of performance regression or fairness issues.
+
+\begin{frame}{Monitoring System}
+
+% The monitoring system provides deep observability. We track both technical and ML-specific metrics, enabling alerts on fairness degradation or latency spikes. This level of insight supports continuous improvement and compliance.
+
+\begin{itemize}
+\item Prometheus metrics for latency, errors, drift
+\item Accuracy \& fairness gauges for ethical alignment
+\item Rapid alerting for anomalies
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Monitoring System (Part 1)
+%------------------------------------------------------------
+% This code defines the ML Metrics class with histograms, counters, gauges. We measure prediction latency, errors, drift, accuracy, and fairness. Each metric is a Prometheus instrument, enabling robust alerting and dashboards.
+
+\begin{frame}[fragile]{Monitoring Code (Part 1)}
+\begin{minted}{python}
+import numpy as np
+import prometheus_client as prom
+from typing import Dict
+
+class MLMetrics:
+    def __init__(self):
+        self.prediction_latency=prom.Histogram(
+            'prediction_latency_seconds','Time for inference',
+            buckets=np.logspace(-3,2,20)
+        )
+        self.prediction_errors=prom.Counter(
+            'prediction_errors_total','Total prediction errors',['error_type']
+        )
+        self.feature_drift=prom.Gauge(
+            'feature_drift_score','Feature drift',['feature_name']
+        )
+        self.model_accuracy=prom.Gauge('model_accuracy','Current model accuracy')
+        self.fairness_score=prom.Gauge(
+            'fairness_score','Model fairness',['protected_group']
+        )
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Monitoring System (Part 2)
+%------------------------------------------------------------
+% The Model Monitor class records predictions, updates drift and fairness metrics. This integration ensures metrics stay current as the model serves requests, providing ongoing visibility into model behavior and user experience.
+
+\begin{frame}[fragile]{Monitoring Code (Part 2)}
+\begin{minted}{python}
+class ModelMonitor:
+    def __init__(self, metrics: MLMetrics):
+        self.metrics = metrics
+        self.baseline_distributions = {}
+
+    def record_prediction(self, features: Dict, prediction: float,
+                          latency: float, error: str=None):
+        self.metrics.prediction_latency.observe(latency)
+        if error:
+            self.metrics.prediction_errors.labels(error_type=error).inc()
+        for fname,val in features.items():
+            drift=self._compute_drift(fname,val)
+            self.metrics.feature_drift.labels(feature_name=fname).set(drift)
+
+    def update_fairness_metrics(self, predictions, protected_attrs: Dict[str,np.ndarray]):
+        for group,mask in protected_attrs.items():
+            score = self._calculate_fairness(predictions, mask)
+            self.metrics.fairness_score.labels(protected_group=group).set(score)
+
+    def _compute_drift(self, fname, val):
+        return 0.0 # placeholder
+
+    def _calculate_fairness(self, predictions, mask):
+        return 0.95 # placeholder
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Automated Rollback Concept Slide
+%------------------------------------------------------------
+% Automated rollback ensures stability when metrics fail. If error rate, latency, or fairness cross thresholds, we revert to a previous model revision. We'll show the code in two parts: configuration and health checks first, then the rollback logic interacting with Kubernetes.
+
+\begin{frame}{Automated Rollback}
+% Rollbacks maintain operational integrity. This system quickly restores last known good state if the model environment degrades, ensuring minimal downtime and preserving trust.
+
+\begin{itemize}
+\item Checks health metrics against thresholds
+\item If violated, initiates Kubernetes rollback
+\item Ensures continuous quality under changing conditions
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Automated Rollback (Part 1)
+%------------------------------------------------------------
+% This code defines Rollback Config and a basic check health method. This logic decides if the system is healthy or if a rollback is needed due to performance, latency, or fairness issues.
+
+\begin{frame}[fragile]{Rollback Code (Part 1)}
+\begin{minted}{python}
+import kubernetes as k8s
+import logging
+
+class RollbackConfig:
+    def __init__(self,error_threshold,latency_threshold,fairness_threshold):
+        self.error_threshold=error_threshold
+        self.latency_threshold=latency_threshold
+        self.fairness_threshold=fairness_threshold
+
+class RollbackManager:
+    def __init__(self, config: RollbackConfig, namespace='default'):
+        self.config = config
+        self.k8s_client = k8s.client.AppsV1Api()
+        self.namespace = namespace
+
+    def check_health(self, metrics):
+        if metrics['error_rate']>self.config.error_threshold:
+            return False,'High error rate'
+        if metrics['p95_latency']>self.config.latency_threshold:
+            return False,'High latency'
+        if metrics['fairness_score']<self.config.fairness_threshold:
+            return False,'Fairness violation'
+        return True,None
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Automated Rollback (Part 2)
+%------------------------------------------------------------
+% If health checks fail, initiate rollback by querying K8s for last known good revision and reverting.
+% If no good revision found, logs an error. This automated safety net ensures quick recovery and stable user experience.
+
+\begin{frame}[fragile]{Rollback Code (Part 2)}
+\begin{minted}{python}
+    def initiate_rollback(self, deployment_name: str, reason: str):
+        try:
+            deployment=self.k8s_client.read_namespaced_deployment(
+                deployment_name,self.namespace)
+            revisions=self.k8s_client.list_namespaced_replica_set(
+                self.namespace,label_selector=f"app={deployment_name}")
+            last_good=self._find_last_good_revision(revisions.items)
+            if not last_good:
+                logging.error("No good revision found")
+                return False
+            body={
+              "kind": "DeploymentRollback",
+              "apiVersion": "apps/v1",
+              "name": deployment_name,
+              "rollbackTo": {"revision":last_good.metadata.annotations['revision']}
+            }
+            self.k8s_client.create_namespaced_deployment_rollback(
+                deployment_name,self.namespace,body)
+            logging.info(f"Rollback initiated: {reason}")
+            return True
+        except k8s.client.rest.ApiException as e:
+            logging.error(f"Rollback failed: {str(e)}")
+            return False
+
+    def _find_last_good_revision(self,rs_list):
+        return rs_list[-1] if rs_list else None
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Serving API Concept Slide
+%------------------------------------------------------------
+% The model serving API concept: A FastAPI service that validates requests, logs predictions, measures latency, and integrates with monitoring. It also handles batch predictions efficiently. Security and compliance are ensured by strict request validation and error handling.
+
+\begin{frame}{Model Serving API}
+% The serving API is the user-facing component. It maintains quality by validating inputs, tracking performance, and enforcing batch size limits. Coupled with monitoring and error counters, it supports continuous oversight and improvement.
+
+\begin{itemize}
+\item FastAPI for performance \& doc generation
+\item Request validation ensures data quality
+\item Integrated monitoring and latency tracking
+\item Handles single \& batch predictions
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Serving API (Part 1)
+%------------------------------------------------------------
+
+% We define a Pydantic model for request validation and set up FastAPI. This ensures only well-formed requests reach the model, reducing risk and maintaining data integrity.
+
+\begin{frame}[fragile]{Serving API Code (Part 1)}
+\begin{minted}{python}
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, validator
+from typing import List, Dict
+import numpy as np
+import time
+
+app = FastAPI()
+metrics = MLMetrics() # from previous code
+model = load_model()  # placeholder
+
+class PredictionRequest(BaseModel):
+    features: Dict[str,float]
+    request_id: str
+
+    @validator('features')
+    def validate_features(cls,v):
+        required={'feature1','feature2','feature3'}
+        if missing:=required-set(v):
+            raise ValueError(f"Missing: {missing}")
+        return v
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Serving API (Part 2)
+%------------------------------------------------------------
+
+% The record latency decorator measures request handling time. The predict endpoint runs the model and returns results. If errors occur, we increment error counters. This ties prediction operations directly into our monitoring framework.
+
+\begin{frame}[fragile]{Serving API Code (Part 2)}
+\begin{minted}{python}
+def record_latency(func):
+    def wrapper(*args,**kwargs):
+        start=time.time()
+        resp=func(*args,**kwargs)
+        duration=time.time()-start
+        metrics.prediction_latency.observe(duration)
+        return resp
+    return wrapper
+
+@app.post("/predict")
+@record_latency
+async def predict(request: PredictionRequest):
+    try:
+        features=np.array([request.features[f] for f in sorted(request.features)])
+        pred=model.predict(features.reshape(1,-1))
+        return {"prediction":float(pred),"request_id":request.request_id}
+    except Exception as e:
+        metrics.prediction_errors.labels(error_type="prediction").inc()
+        raise HTTPException(status_code=500,detail=str(e))
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Serving API (Part 3)
+%------------------------------------------------------------
+
+% The batch predict endpoint handles multiple requests at once, applying similar validations and error handling as the predict endpoint. The batch interface supports diverse client needs while maintaining the same quality guarantees and monitoring integration.
+
+\begin{frame}[fragile]{Serving API Code (Part 3)}
+\begin{minted}{python}
+@app.post("/batch_predict")
+@record_latency
+async def batch_predict(requests:List[PredictionRequest]):
+    if len(requests)>100:
+        raise HTTPException(400,"Batch size too large")
+
+    feats=np.array([[r.features[f] for f in sorted(r.features)] for r in requests])
+    try:
+        preds=model.predict(feats)
+        return [
+          {"prediction":float(p),"request_id":r.request_id}
+          for p,r in zip(preds,requests)
+        ]
+    except Exception as e:
+        metrics.prediction_errors.labels(error_type="batch").inc()
+        raise HTTPException(500,detail=str(e))
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Production Best Practices (Voiceover)
+%------------------------------------------------------------
+
+% Before concluding, let's revisit best practices. These principles ensure stable, trustworthy ML systems. They complement the code we've shown, focusing on graceful degradation, comprehensive monitoring, robust security, compliance measures, and operational excellence.
+
+\begin{frame}{Production MLOps Best Practices}
+
+% These best practices are drawn from real-world experience. They ensure you can run ML systems sustainably, responding gracefully to failures, continuously improving metrics, and maintaining ethical and performance standards at scale.
+
+\begin{itemize}
+\item System Design: Graceful degradation, circuit breakers, zero-downtime
+\item Monitoring: Business \& tech metrics, robust logging, model performance
+\item Security \& Compliance: Regular audits, automated checks, incident response
+\item Operational Excellence: Automate routine tasks, document processes, test disaster recovery
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Next Steps (Voiceover)
+%------------------------------------------------------------
+
+% Finally, consider next steps: advanced deployment methods like A/B testing for model comparison, canary analysis for safer rollouts, and shadow deployments to evaluate models silently. Enhance monitoring with custom dashboards and predictive maintenance. Further automation reduces manual overhead. With continuous refinement, you build a sustainable MLOps ecosystem aligned with both business goals and ethical principles.
+
+\begin{frame}{Next Steps}
+
+% Adopting these next steps keeps your MLOps ecosystem evolving, maintaining a culture of continuous improvement and proactive governance. This ongoing investment pays off in long-term stability, user trust, and regulatory compliance.
+
+\begin{itemize}
+\item Advanced Deployment: A/B testing, canary analysis, shadow deployments
+\item Enhanced Monitoring: Custom dashboards, predictive maintenance, performance reports
+\item More Automation: Self-healing capabilities, automated documentation, routine ops automation
+\end{itemize}
+\end{frame}
+
+\end{document}

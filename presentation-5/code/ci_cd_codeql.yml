@@ -1,0 +1,18 @@
+# ci_cd_codeql.yml
+#
+# Uses CodeQL to perform semantic code analysis. Potentially unethical logic (e.g., targeting demographics unfairly)
+# could be identified by custom CodeQL queries.
+
+name: CodeQL Analysis
+
+on: [push, pull_request]
+
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: github/codeql-action/init@v2
+        with:
+          languages: python
+      - uses: github/codeql-action/analyze@v2

@@ -1,0 +1,480 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts with T1 encoding
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+
+% Add specific font fallback
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}
+
+% Metropolis adjustments
+\metroset{progressbar=none, sectionpage=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Additional packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{minted}
+\usemintedstyle{friendly}
+\setminted{
+    fontsize=\small,
+    breaklines=true,
+    breakanywhere=true,
+    frame=single,
+    autogobble
+}
+\usepackage{menukeys}
+
+\title{Data Preparation \& Ethical Data Handling}
+\subtitle{AI Masters Capstone Project - Presentation 2}
+\author{Jonathan Agustin}
+\date{November 2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+% Welcome back to our journey toward building automated, ethically grounded ML pipelines.
+% In our first presentation, we discussed why automation, fairness, accountability, and compliance matter.
+% Today, we focus on the data layer. Data is not just numbers; it reflects lives, structures, and histories.
+% We'll cover ethical data handling, automated preprocessing, effective validation sets, privacy, and bias mitigation.
+% By the end, you'll have a framework for preparing and validating data ethically, ensuring fairness as models develop.
+
+\maketitle
+
+%------------------------------------------------------------
+% Overview Slide
+%------------------------------------------------------------
+% Let's look at our agenda for today. We'll start with the foundations of ethical data handling,
+% then move into automated preprocessing techniques. We'll discuss privacy and compliance requirements,
+% explore validation strategies based on Thomas's 2017 work, and finish with bias detection and mitigation.
+% Each topic builds on the previous one to create a comprehensive framework for ethical data preparation.
+
+\begin{frame}{What We'll Cover Today}
+\begin{itemize}
+\item Ethical data handling: fundamentals and importance
+\item Automated preprocessing: cleaning, transforming, validating
+\item Privacy \& compliance: embedding regulations into data pipelines
+\item Effective validation sets (Thomas, 2017): beyond naive splits
+\item Detecting \& mitigating bias before training
+\end{itemize}
+
+\emph{Goal: robust, transparent, ethical data pipelines for trustworthy ML.}
+\end{frame}
+
+%------------------------------------------------------------
+% Importance of Ethical Data Handling
+%------------------------------------------------------------
+% Every datapoint we handle represents real people, real decisions, and real consequences.
+% When we process credit histories, medical records, or employment data, we're working with information that can significantly impact lives. This responsibility requires rigorous ethical standards and careful consideration of how our data handling affects individuals and communities.
+
+\begin{frame}{Why Ethical Data Handling Matters}
+\begin{itemize}
+\item Data = human lives and opportunities
+\item Trust \& credibility: keys to long-term AI adoption
+\item Fairness, privacy, compliance: protect users and organizations
+\end{itemize}
+
+\emph{Ethical standards underpin the entire ML lifecycle.}
+\end{frame}
+
+%------------------------------------------------------------
+% Automated Data Preprocessing Intro
+%------------------------------------------------------------
+% Automation isn't just about efficiency - it's about consistency and fairness.
+% When we automate our preprocessing steps, we ensure every piece of data receives the same treatment, reducing the risk of human bias or inconsistency. This standardization is crucial for building fair and reliable ML systems.
+
+\begin{frame}{Automated Data Preprocessing}
+\begin{itemize}
+\item Standardize cleaning: handle missing values, outliers, inconsistencies
+\item Consistent transformations: encoding, scaling, normalization
+\item Transparency: reproducible steps reduce hidden biases
+\end{itemize}
+
+\emph{Automation yields a trustworthy data layer for ML.}
+\end{frame}
+
+%------------------------------------------------------------
+% Data Loading and Initial Processing
+%------------------------------------------------------------
+% Let's start with the basics of data preprocessing. This first step involves loading our data and identifying the different types of columns we'll need to process.
+% Notice how we explicitly separate numeric and categorical columns - this clarity helps prevent mistakes and makes our pipeline more maintainable.
+
+\begin{frame}[fragile]{Data Loading and Column Types}
+\begin{minted}[fontsize=\small]{python}
+import pandas as pd
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+# Load and identify column types
+df = pd.read_csv("raw_data.csv")
+
+# Separate numeric and categorical columns
+numeric_cols = df.select_dtypes(include=['float','int']).columns
+categorical_cols = df.select_dtypes(include=['object']).columns
+
+# Initial data check
+print(f"Numeric columns: {len(numeric_cols)}")
+print(f"Categorical columns: {len(categorical_cols)}")
+\end{minted}
+
+\emph{Clear separation of data types enables proper handling.}
+\end{frame}
+
+%------------------------------------------------------------
+% Numeric Data Processing
+%------------------------------------------------------------
+% When handling numeric data, we need to be careful with missing values and scaling. The choice of imputation strategy can significantly impact our models. Here, we're using mean imputation, but depending on your domain, median or more sophisticated methods might be more appropriate. Always document these choices for transparency.
+
+\begin{frame}[fragile]{Processing Numeric Features}
+\begin{minted}[fontsize=\small]{python}
+# Handle missing values in numeric columns
+imputer = SimpleImputer(strategy='mean')
+df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+
+# Scale numeric features
+scaler = StandardScaler()
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+
+# Verify no missing values remain
+print("Missing values after imputation:",
+      df[numeric_cols].isnull().sum().sum())
+\end{minted}
+
+\emph{Consistent scaling ensures fair model training.}
+\end{frame}
+
+%------------------------------------------------------------
+% Categorical Data Processing
+%------------------------------------------------------------
+% Categorical data requires special attention. Here we're using one-hot encoding, but we need to be mindful of high-cardinality features. The 'handle_unknown' parameter is crucial - it determines how we handle categories we haven't seen before. This kind of forward thinking helps prevent problems in production.
+
+\begin{frame}[fragile]{Processing Categorical Features}
+\begin{minted}[fontsize=\small]{python}
+# Encode categorical variables
+encoder = OneHotEncoder(
+    sparse_output=False,
+    handle_unknown='ignore'
+)
+# Transform and create new dataframe
+encoded = encoder.fit_transform(df[categorical_cols])
+encoded_df = pd.DataFrame(
+    encoded,
+    columns=encoder.get_feature_names_out(categorical_cols)
+)
+# Combine with numeric features
+df = pd.concat([df.drop(columns=categorical_cols), encoded_df],
+               axis=1)
+\end{minted}
+
+\emph{Careful encoding preserves categorical information.}
+\end{frame}
+
+%------------------------------------------------------------
+% Data Validation Setup
+%------------------------------------------------------------
+% Data validation is your first line of defense against data quality issues. Here we're setting up a schema that defines our expectations about the data. These constraints aren't just technical - they should reflect domain knowledge and ethical considerations about what constitutes valid data.
+
+\begin{frame}[fragile]{Setting Up Data Validation}
+\begin{minted}[fontsize=\small]{python}
+import pandera as pa
+from pandera.typing import DataFrame, Series
+
+class InputSchema(pa.SchemaModel):
+    age: Series[int] = pa.Field(ge=0, le=120)
+    income: Series[float] = pa.Field(ge=0)
+
+    class Config:
+        strict = True
+        coerce = True
+\end{minted}
+
+\emph{Schema definitions protect against invalid data.}
+\end{frame}
+
+%------------------------------------------------------------
+% Data Validation Implementation
+%------------------------------------------------------------
+% Implementing validation checks is crucial for catching problems early. When validation fails, we need clear error messages and a defined process for handling the failure. This might mean halting the pipeline or triggering a review process, depending on your requirements.
+
+\begin{frame}[fragile]{Implementing Validation Checks}
+\begin{minted}[fontsize=\small]{python}
+def validate_dataset(df: pd.DataFrame) -> pd.DataFrame:
+    try:
+        validated_df = InputSchema.validate(df)
+        print("Validation passed!")
+        return validated_df
+    except pa.errors.SchemaError as e:
+        print("Validation failed:", str(e))
+        raise RuntimeError("Data validation failed")
+
+# Run validation
+validated_df = validate_dataset(df)
+\end{minted}
+
+\emph{Early validation prevents downstream issues.}
+\end{frame}
+
+%------------------------------------------------------------
+% Time-Based Training Split
+%------------------------------------------------------------
+% Following Thomas's recommendations, we implement time-based splits for temporal data. This approach better reflects how our model will be used in production - we'll always be using past data to predict future outcomes. Random splits can give overly optimistic results by ignoring temporal patterns.
+
+\begin{frame}[fragile]{Time-Based Training Splits}
+\begin{minted}[fontsize=\small]{python}
+# Define time-based splits
+training_cutoff = '2017-07-31'
+validation_start = '2017-08-01'
+validation_end = '2017-08-15'
+
+# Create splits
+df_train = df[df['date'] <= training_cutoff]
+df_val = df[
+    (df['date'] > training_cutoff) &
+    (df['date'] <= validation_end)
+]
+
+print(f"Training samples: {len(df_train)}")
+print(f"Validation samples: {len(df_val)}")
+\end{minted}
+
+\emph{Time-based splits reflect real-world conditions.}
+\end{frame}
+
+%------------------------------------------------------------
+% Entity-Based Training Split
+%------------------------------------------------------------
+% For some applications, we need to consider entire entities - like users or companies. This approach ensures we're testing our model's ability to generalize to completely new entities, which is often more realistic than random splits. It helps prevent data leakage and gives us a better estimate of real-world performance.
+
+\begin{frame}[fragile]{Entity-Based Training Splits}
+\begin{minted}[fontsize=\small]{python}
+# Get list of known entities
+known_entities = ['id1', 'id2', 'id3']  # Example IDs
+
+# Split based on entities
+df_train = df[df['entity_id'].isin(known_entities)]
+df_val = df[~df['entity_id'].isin(known_entities)]
+
+# Verify no overlap
+assert len(set(df_train['entity_id']) &
+           set(df_val['entity_id'])) == 0
+
+print(f"Unique entities in train: {df_train['entity_id'].nunique()}")
+print(f"Unique entities in val: {df_val['entity_id'].nunique()}")
+\end{minted}
+
+\emph{Entity-based validation tests true generalization.}
+\end{frame}
+
+%------------------------------------------------------------
+% Privacy Protection Setup
+%------------------------------------------------------------
+% Privacy protection isn't optional - it's a fundamental requirement. Here we're implementing basic privacy measures like pseudonymization. Remember that hashing alone isn't enough for true anonymization, but it's a start. We need to consider the full privacy implications of our data handling.
+
+\begin{frame}[fragile]{Privacy Protection: Pseudonymization}
+\begin{minted}[fontsize=\small]{python}
+import hashlib
+from typing import List
+
+def pseudonymize_column(series: pd.Series) -> pd.Series:
+    return series.apply(lambda x:
+        hashlib.sha256(str(x).encode()).hexdigest())
+
+# Columns that need pseudonymization
+sensitive_cols = ['user_id', 'email', 'phone']
+
+# Apply pseudonymization
+for col in sensitive_cols:
+    if col in df.columns:
+        df[f"{col}_hashed"] = pseudonymize_column(df[col])
+        df = df.drop(columns=[col])
+\end{minted}
+
+\emph{Privacy protection is a fundamental requirement.}
+\end{frame}
+
+%------------------------------------------------------------
+% Bias Detection Setup
+%------------------------------------------------------------
+% Bias detection is crucial before any model training begins. Here we're using the AIF360 toolkit to measure disparities across protected attributes. These metrics help us understand if our data processing pipeline is maintaining or amplifying existing biases in the data.
+
+\begin{frame}[fragile]{Setting Up Bias Detection}
+\begin{minted}[fontsize=\small]{python}
+from aif360.datasets import BinaryLabelDataset
+from aif360.metrics import BinaryLabelDatasetMetric
+
+# Create dataset with protected attributes
+dataset = BinaryLabelDataset(
+    df=df,
+    label_names=['decision'],
+    protected_attribute_names=['gender', 'race']
+)
+
+# Define privileged and unprivileged groups
+privileged_groups = [{'gender': 1}]
+unprivileged_groups = [{'gender': 0}]
+\end{minted}
+
+\emph{Identifying bias is the first step to addressing it.}
+\end{frame}
+
+%------------------------------------------------------------
+% Bias Metrics and Mitigation
+%------------------------------------------------------------
+% Once we've identified bias, we need to measure it quantitatively and take steps to address it. The reweighing technique shown here is just one approach. The choice of mitigation strategy should be based on your specific context and the types of bias you've identified.
+
+\begin{frame}[fragile]{Measuring and Mitigating Bias}
+\begin{minted}[fontsize=\footnotesize]{python}
+from aif360.algorithms.preprocessing import Reweighing
+# Measure initial bias
+metrics = BinaryLabelDatasetMetric(
+    dataset,
+    unprivileged_groups=unprivileged_groups,
+    privileged_groups=privileged_groups
+)
+# Print initial disparities
+print("Disparate impact:", metrics.disparate_impact())
+print("Statistical parity difference:", metrics.statistical_parity_difference())
+# Apply reweighing
+reweighing = Reweighing(
+    unprivileged_groups=unprivileged_groups,
+    privileged_groups=privileged_groups
+)
+transformed_dataset = reweighing.fit_transform(dataset)
+\end{minted}
+
+\end{frame}
+
+%------------------------------------------------------------
+% Putting It All Together
+%------------------------------------------------------------
+% Now we've seen all the components of ethical data preparation: preprocessing, validation, privacy protection, and bias mitigation. These elements work together to create a robust, ethical pipeline. Remember that this isn't a one-time process - it requires continuous monitoring and adjustment as your data and requirements evolve.
+
+\begin{frame}{A Holistic Data Strategy}
+\begin{itemize}
+\item Combine cleaning, validation, privacy, and bias mitigation
+\item Document processes for transparency and audits
+\item Monitor and update as data evolves
+\item Build trust through consistent ethical practices
+\end{itemize}
+
+\emph{A comprehensive approach ensures lasting ethical compliance.}
+\end{frame}
+
+%------------------------------------------------------------
+% Pipeline Implementation
+%------------------------------------------------------------
+% Here's how we can combine all these components into a cohesive pipeline. Notice how each step builds on the previous one, and how we maintain error checking throughout. This structure makes it easier to modify individual components while maintaining overall integrity.
+
+\begin{frame}[fragile]{Implementing the Complete Pipeline}
+\begin{minted}[fontsize=\small]{python}
+def ethical_data_pipeline(raw_df: pd.DataFrame) -> pd.DataFrame:
+    # 1. Initial validation
+    validated_df = validate_dataset(raw_df)
+
+    # 2. Privacy protection
+    protected_df = protect_privacy(validated_df)
+
+    # 3. Preprocessing
+    processed_df = preprocess_data(protected_df)
+
+    # 4. Bias detection and mitigation
+    final_df = mitigate_bias(processed_df)
+
+    return final_df
+\end{minted}
+
+\emph{A structured pipeline ensures consistent processing.}
+\end{frame}
+
+%------------------------------------------------------------
+% Monitoring and Maintenance
+%------------------------------------------------------------
+% An ethical data pipeline requires ongoing monitoring and maintenance. These logging and monitoring functions help us track the health of our pipeline and catch any emerging issues quickly. Regular audits and updates ensure we maintain high ethical standards over time.
+
+\begin{frame}[fragile]{Monitoring and Maintenance}
+\begin{minted}[fontsize=\small]{python}
+def monitor_pipeline_health(df: pd.DataFrame) -> None:
+    # Track data distribution
+    log_distribution_metrics(df)
+
+    # Check for drift
+    drift_detected = check_for_drift(df)
+
+    # Validate fairness metrics
+    fairness_metrics = compute_fairness_metrics(df)
+
+    # Alert if thresholds exceeded
+    if needs_attention(drift_detected, fairness_metrics):
+        trigger_review_process()
+\end{minted}
+
+\emph{Continuous monitoring maintains ethical standards.}
+\end{frame}
+
+%------------------------------------------------------------
+% Next Steps
+%------------------------------------------------------------
+% With our ethical data pipeline in place, we're ready to move on to model training. The principles we've covered today - fairness, transparency, and privacy - will continue to guide us as we develop our models. Remember, ethical considerations should inform every step of the machine learning lifecycle.
+
+\begin{frame}{Next Steps}
+\begin{itemize}
+\item Next presentation: Automating Model Training \& Ethical Evaluation
+\item Apply these data preparation principles to model development
+\item Maintain focus on fairness and accountability
+\item Prepare for deployment considerations
+\end{itemize}
+
+\emph{Strong data foundations enable ethical model development.}
+\end{frame}
+
+%------------------------------------------------------------
+% References
+%------------------------------------------------------------
+% These references provide deeper insights into the topics we've covered. Thomas's work on validation sets is particularly valuable for understanding how to create realistic evaluation scenarios. The technical documentation for AIF360 and Pandera will help you implement these concepts in practice.
+
+\begin{frame}{References}
+\footnotesize
+\begin{itemize}
+\item Thomas, R. (2017). \textit{How (and why) to create a good validation set}. \url{https://rachel.fast.ai/posts/2017-11-13-validation-sets/}
+\item \textit{aif360} toolkit: \url{https://github.com/Trusted-AI/AIF360}
+\item \textit{pandera} library: \url{https://pandera.readthedocs.io/}
+\item GDPR guidelines: \url{https://gdpr.eu/}
+\end{itemize}
+\end{frame}
+
+\end{document}

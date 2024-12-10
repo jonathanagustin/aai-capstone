@@ -1,0 +1,336 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Theme and Fonts
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+
+% Disable section title slides
+\metroset{progressbar=none, sectionpage=none}
+
+\setbeamerfont{frametitle}{size=\Large}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black, bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Additional packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{menukeys}
+
+\title{Building an Automated ML Pipeline \\ \large Introduction and Ethical Foundations}
+\subtitle{AI Masters Capstone Project}
+\author{Jonathan Agustin}
+\date{November 2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+% VOICEOVER:
+% Welcome to this first presentation in a series exploring the construction of an automated machine learning (ML) pipeline with a strong emphasis on ethical, responsible, and legally compliant practices.
+% In this session, we’ll discuss why building an automated ML pipeline isn’t just about technology stacks and modeling frameworks—it’s about ensuring trust, fairness, accountability, and compliance with regulations that are rapidly evolving.
+% Think back to how the internet grew: it started small, with many skeptics, then exploded globally. GenAI is following a similar trajectory. But as AI expands, so do its potential risks and responsibilities.
+% We’ll explore foundational legal cases, show how ethics and compliance tie directly into your technical workflow, and clarify why you, as a developer or data scientist, bear a personal responsibility for the solutions you help create.
+% By the end of this presentation, you will understand why building an automated pipeline involves not just coding and infrastructure, but also careful thought about fairness, data integrity, transparency, user protection, and meeting legal standards.
+% This sets the stage for all the subsequent presentations, where we’ll dive deeper into data management, model training and fairness, deployment automation, and code quality and security—always viewed through the lens of ethical and responsible AI development.
+\maketitle
+
+%------------------------------------------------------------
+\section{Setting the Stage}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% Let’s begin by thinking historically. When the internet was in its infancy, many doubted its potential and questioned whether it would have widespread practical use. Fast forward a few decades, and the internet became the backbone of virtually every industry.
+% GenAI—Generative AI—is now often compared to that early internet era. It’s a transformative force, opening up new applications from creative content generation to complex decision-making support. But what made the internet thrive wasn’t just the raw technology; it was the trust established through standards, user-friendly distribution, and integrations that made it accessible and safe (or safer) for a broad audience.
+% For GenAI, we face a similar challenge. We can build cutting-edge models, but if those models don’t operate within a framework of fairness, transparency, and responsible data usage, we risk alienating users and facing serious legal and reputational damages.
+% On this slide, we highlight that GenAI’s success mirrors the internet’s journey. Technical strength alone isn’t enough. It is trust, distribution, ethical considerations, and long-term societal acceptance that determine whether GenAI will be as revolutionary as the internet or falter under the weight of misuse and skepticism.
+\begin{frame}{A New Paradigm: GenAI as the Next Internet}
+\begin{itemize}
+\item GenAI’s trajectory mirrors the early internet’s transformative growth.
+\item Success relies not only on model sophistication, but on trust and ethical integration.
+\item Fairness, accountability, and transparency enable sustainable and reputable AI adoption.
+\end{itemize}
+\end{frame}
+
+% VOICEOVER:
+% Let’s consider what happened in the early stages of AI development: many organizations built impressive prototypes internally, but failed to effectively push them into reliable, user-facing products. Why does this matter? Because users—and the market—respond to delivered value, not hidden potential.
+% If a non-tech company with a strong brand and consumer trust decides to integrate AI ethically and transparently, it can outshine traditional tech giants who might be focused only on raw technical prowess but neglecting fairness and user well-being.
+% By applying lessons learned from past tech evolutions, we understand that building trust through ethical AI is not just a moral stance—it can be a formidable competitive advantage. The ecosystem will favor those who prioritize user safety, fairness, and compliance, which ultimately leads to user loyalty, brand reputation, and market share.
+\begin{frame}{Lessons from the Past Applied to GenAI}
+\begin{itemize}
+\item Move beyond limited internal prototypes—users need reliable, trusted ML solutions.
+\item Non-tech firms with established credibility can surpass tech giants by centering ethics.
+\item Ethical frameworks must guide scaling and adoption of AI tools.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Ethical Imperatives and Legal Accountability}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% We’re at a formative stage in AI—similar to the early days of the internet. The difference now is that AI’s mistakes can be replicated at scale incredibly fast, potentially harming thousands or millions of people.
+% As developers, data scientists, or ML engineers, we must acknowledge we’re not just neutral implementers. We share responsibility for what we create. Regulatory and legal frameworks are catching up to these realities. Being well-informed about these frameworks is not optional if you want to maintain credibility and avoid severe consequences.
+% The case United States v. Liang is instructive. In this legal precedent, an engineer was held accountable for enabling wrongdoing through code manipulation—despite claiming they were just following corporate directives. This highlights that we cannot hide behind organizational commands. Individual professional responsibility is a core theme now recognized in legal systems around the world.
+\begin{frame}{Ethical AI Development is Not Optional}
+\begin{itemize}
+\item Early-stage AI errors can scale harm exponentially.
+\item Developers bear ethical and legal responsibility for their code.
+\item \textbf{Case: United States v. Liang}: Engineer held liable despite following orders.
+\end{itemize}
+
+\footnotesize (Ref: \href{https://www.justice.gov/opa/pr/volkswagen-engineer-pleads-guilty-his-role-conspiracy-cheat-us-emissions-tests}{DOJ Press Release})
+\end{frame}
+
+% VOICEOVER:
+% Another pivotal case is Mobley v. Workday (2024), addressing bias in hiring algorithms. This case set a clear precedent: an AI vendor can be held liable if their product discriminates during hiring processes.
+% This means automated decisions—once considered “just an algorithm”—are now viewed with the same seriousness and scrutiny as if a human made those decisions. The courts are essentially saying: If your algorithm is biased or discriminatory, the excuse “It’s just software” doesn’t fly. The vendor, the developer, and the organization deploying that AI can face legal repercussions.
+% This lesson: Incorporating fairness checks, bias mitigation strategies, and transparent documentation from the earliest stages is not just ethical—it’s legally prudent. It ensures that as your AI scales, it does so without systematically disadvantaging certain groups, protecting both individuals and the company’s brand.
+\begin{frame}{Mobley v. Workday: AI Accountability in Hiring}
+\begin{itemize}
+\item \textbf{Mobley v. Workday (2024)}: Demonstrates that AI vendors can be liable for bias in hiring.
+\item Automated decisions face the same legal scrutiny as human decisions.
+\item We must integrate fairness checks from data preparation to model output.
+\end{itemize}
+\end{frame}
+
+% VOICEOVER:
+% The phrase “I was just following orders” has never been a strong legal defense, and it’s now even less so in the context of AI development. As engineers and data scientists, we are expected to understand the implications of what we build.
+% If you’re asked to implement features that might knowingly introduce biases, or you see warning signs that a model’s use could harm certain communities, you have not only a moral but potentially a legal duty to speak up. Silence or passive compliance can be interpreted as complicity.
+% Ethical vigilance isn’t just about doing the right thing for users. It also protects your personal career. If a high-profile scandal emerges, claiming ignorance won’t shield you. Your reputation as a trustworthy developer depends on your willingness to question unethical directives. Remember, your name is often attached to the code you write.
+\begin{frame}{Personal Responsibility}
+\begin{itemize}
+\item “Just following orders” is no defense—developers must question unethical directives.
+\item Fairness and transparency protect users, businesses, and professionals.
+\item Ethical vigilance is key to long-term stability and trust in AI solutions.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Automated ML Pipelines: Vision and Tools}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% Let’s talk about what makes deploying AI in production challenging. Many of us start with Jupyter notebooks or local experiments. This is great for quick iteration and idea testing, but it’s a far cry from the robustness required when actual users depend on your model’s predictions.
+% Productionizing an ML model involves careful data preprocessing pipelines, consistent feature transformations, model versioning, auditing of changes, automated testing, monitoring, and compliance documentation. If you skip these steps, your model might fail silently in production, deliver biased results, or violate privacy laws.
+% The “roads” for our “race cars” analogy is fitting. Your model—the race car—might be powerful. But without well-built roads—meaningfully automated and ethically sound infrastructure—it won’t get anywhere. The infrastructure ensures reliability, scalability, compliance, and trust.
+\begin{frame}{From Notebooks to Production}
+\begin{itemize}
+\item Transition from prototype notebooks to production-grade pipelines is complex.
+\item Requires stable preprocessing, model versioning, compliance, and monitoring.
+\item Proper “infrastructure” ensures models reach real users effectively.
+\end{itemize}
+\end{frame}
+
+% VOICEOVER:
+% Complexity and regulation go hand in hand. In fields like finance or healthcare, regulations are stringent for a good reason—these industries deal with sensitive personal data and life-altering decisions.
+% You must ensure data security, access controls, robust logging, and mechanisms to track when and how decisions were made. If a regulator comes knocking, you need to show not just the final predictions, but also the data pipeline, transformations, model versions, and fairness metrics you assessed.
+% Without strong infrastructure, even the best model is practically useless. It might never be deployed, or if deployed, it could run afoul of compliance standards. MLOps—Machine Learning Operations—practice ensures that what you build is not just smart, but also reliable, documented, and lawful.
+\begin{frame}{Addressing Complexity and Regulation}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\begin{itemize}
+\item Regulated fields (finance, healthcare) demand full auditability.
+\item Without robust infrastructure, even the best models remain idle.
+\end{itemize}
+
+\small Improving infrastructure ensures compliance with privacy laws and industry standards.
+\end{columns}
+\end{frame}
+
+% VOICEOVER:
+% Automation can make your life much easier. By automating data cleaning, model training, validation, and deployment steps, you ensure consistency and reduce human error. But remember, automation is a double-edged sword. If you automate an unethical process, you scale unethical outcomes.
+% That’s why fairness and bias checks must be embedded within your automated pipeline. Your pipeline should not only orchestrate tasks but also run checks for data drift, model bias, and performance metrics across demographic groups. Integrating comprehensive documentation—describing how data is used, what assumptions are made, and how fairness is evaluated—turns your pipeline into an ethical framework rather than just a technical convenience.
+% A well-structured pipeline is a long-term investment. It can support ongoing improvements, periodic fairness audits, and quicker responses to regulatory changes. Instead of patchwork fixes, aim for a pipeline that’s ethically robust by design.
+\begin{frame}{Building a Comprehensive, Ethical Pipeline}
+\begin{itemize}
+\item Automation fosters consistent preprocessing, reproducible training, and smooth deployment.
+\item Integrate bias checks and fairness metrics throughout, not as afterthoughts.
+\item Ethical design upfront prevents costly retrofits and reputational damage later.
+\end{itemize}
+\end{frame}
+
+% VOICEOVER:
+% The technologies you choose can greatly support or hinder your ability to build a reliable, ethical pipeline. GitHub Actions can automate continuous integration and continuous delivery (CI/CD), ensuring that every commit triggers tests and checks. This encourages a culture where you don’t just build and forget—you continuously validate.
+% Docker standardizes environments, so your model won’t break due to different library versions between your local machine and production. Terraform allows you to define your infrastructure as code, making deployments repeatable, traceable, and auditable. Hugging Face Spaces simplifies model sharing and demonstration, making it easier to communicate model capabilities and limitations with stakeholders.
+% Each of these tools helps implement guardrails: version control for data and code, automated tests for fairness and bias, reproducible training pipelines, and continuous monitoring. When chosen and integrated thoughtfully, these tools form a scaffold for ethical, compliant, and reliable ML delivery.
+\begin{frame}{Key Technologies}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\begin{itemize}
+\item \textbf{GitHub Actions}: CI/CD ensuring continuous testing and integration.
+\item \textbf{Docker}: Consistent environments, reducing “works on my machine” issues.
+\end{itemize}
+
+\column{0.5\textwidth}
+\begin{itemize}
+\item \textbf{Terraform}: Infrastructure as Code (IaC) for scalable AWS deployments.
+\item \textbf{Hugging Face Spaces}: Intuitive model hosting and demos.
+\end{itemize}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Real-World Compliance Examples}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% Let’s step into a real-world scenario: IntelliVision. They made grand claims about facial recognition accuracy and lack of bias, but could not back these claims with evidence. The Federal Trade Commission (FTC) scrutinized these assertions.
+% This example underscores that marketing promises must match reality. Regulators now understand AI enough to demand proof. Just saying “Our model is fair and accurate” is no longer enough. You need documentation of the training process, validation methods, bias testing, and performance across different demographic groups.
+% Compliance isn’t a burden—it’s a safeguard. By maintaining thorough records and performing ongoing fairness checks, you not only meet legal standards but also build trust with customers. They know you’re serious about doing AI right.
+\begin{frame}{FTC \& IntelliVision: Compliance Matters}
+\begin{itemize}
+\item IntelliVision claimed high accuracy and zero bias without evidence.
+\item FTC’s action shows that bold claims require rigorous validation and documentation.
+\item Regulatory scrutiny is intensifying—substantiation is non-negotiable.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Operation AI Comply: The FTC’s Crackdown}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% In September 2024, the FTC launched Operation AI Comply, a series of enforcement actions targeting companies that misuse AI or make deceptive claims about their AI capabilities. This was a wake-up call to the industry: The era of unregulated AI hype is closing.
+% If you promise the moon—like saying your AI can solve legal cases without human lawyers, or guarantee financial success—without the actual capability to do so, you risk not just fines but severe damage to your brand.
+% Operation AI Comply reminds us that regulators are not lagging behind. They are catching up quickly and actively policing AI claims. The lesson: Be transparent, humble, and factual about your model’s strengths and weaknesses.
+\begin{frame}{Operation AI Comply}
+\begin{itemize}
+\item Launched by FTC (Sept 2024), targets deceptive AI claims.
+\item Enforcement actions stress that AI hype is no shield from liability.
+\item Misleading consumers about AI capabilities leads to penalties.
+\end{itemize}
+\end{frame}
+
+% VOICEOVER:
+% Let’s look at some highlighted cases:
+% DoNotPay claimed to offer an “AI Lawyer,” suggesting it could handle legal cases autonomously. Reality fell short, and they were forced to settle, warning consumers about the limitations of their tool.
+% Ascend Ecom, Ecommerce Empire Builders, and FBA Machine promised get-rich-quick schemes powered by AI. Unsurprisingly, they couldn’t deliver. Rytr enabled the generation of fake reviews, eroding consumer trust in the marketplace.
+% The key takeaway: You can’t just leverage “AI” as a buzzword. Regulators and consumers now demand evidence. If your product relies on AI, you must be able to show how it works, what it can and can’t do, and prove your claims. Ethical compliance and transparent communication are paramount.
+\begin{frame}{Key Enforcement Cases}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\textbf{DoNotPay:} Claimed an “AI Lawyer” lacking real legal qualifications. Settlement included consumer warnings.
+
+\vspace{0.5em}
+\textbf{Rytr:} Generated deceptive AI-based reviews, eroding trust and prompting enforcement.
+
+\column{0.5\textwidth}
+\textbf{Ascend Ecom, Ecommerce Empire Builders, FBA Machine:} Promised easy earnings via AI but failed to deliver genuine value.
+
+\vspace{0.5em}
+\textit{Lesson: Claims must be truthful, backed by evidence, and free from deceptive hype.}
+\end{columns}
+\end{frame}
+
+% VOICEOVER:
+% What does this mean for developers and businesses?
+% First, you must maintain thorough documentation. Record your data sources, your preprocessing steps, your model’s limitations, and the methods used to evaluate fairness and accuracy.
+% Second, be transparent with users. If your model struggles with certain demographics or types of data, say so. If your accuracy drops under certain conditions, disclose it. Honesty builds trust.
+% Third, treat compliance as a built-in aspect of your pipeline. Integrate legal and ethical checks alongside your technical checks. This reduces last-minute scrambles when auditors come calling and fosters a culture of responsibility within your organization.
+\begin{frame}{Implications for Developers and Businesses}
+\begin{itemize}
+\item Transparency and honesty in AI performance claims are essential.
+\item Document training data, known limitations, and testing procedures.
+\item Compliance integrated into pipeline design reduces risk and builds long-term trust.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Roadmap of the Series}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% This presentation is just the introduction, setting the stage for the journey ahead. In the upcoming presentations, we’ll break down the ML pipeline into components:
+% Next, we’ll explore data preparation and ethical handling—how to ensure your data is representative, cleaned, and free from glaring biases before training.
+% Then we’ll discuss automating model training, implementing fairness checks, and ensuring that what you deploy can be trusted. We’ll cover deployment automation, continuous monitoring, and compliance steps to keep your models safe in the wild. Finally, we’ll talk about code quality, security, and the final layer of ethical governance.
+% By the end of this series, you’ll have a blueprint for building an ML pipeline that’s not only technically sound, but also ethically grounded and legally defensible.
+\begin{frame}{Our Series Roadmap}
+\begin{columns}[T,onlytextwidth]
+\column{0.5\textwidth}
+\textbf{Presentation 1:} Automated ML Pipeline Foundations \& Ethics
+
+\textbf{Presentation 2:} Data Preparation \& Ethical Handling
+
+\column{0.5\textwidth}
+\textbf{Presentation 3:} Automating Training \& Fairness Checks
+
+\textbf{Presentation 4:} Deployment Automation \& Compliance
+
+\textbf{Presentation 5:} Code Quality, Security \& Ethical Governance
+\end{columns}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Next Steps}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% Your immediate next step is to focus on the data layer. Data is the bedrock of ML. If your data is biased, incomplete, or non-representative, no amount of sophisticated modeling can produce fair and trustworthy results.
+% In the next presentation, we’ll show you how to automate data preparation in a way that promotes quality and fairness. You’ll learn to detect biases early, manage sensitive information ethically, and ensure that when your pipeline transforms data, it does so transparently and responsibly.
+% By starting with a solid, ethical foundation at the data level, you pave the way for all subsequent steps—model training, deployment, and long-term maintenance—to align with your ethical and legal obligations.
+\begin{frame}{Next Steps}
+\begin{itemize}
+\item Next: Ethical data preparation—ensuring representative, high-quality datasets.
+\item Building pipelines that are robust, fair, and compliant from the ground up.
+\end{itemize}
+\end{frame}
+
+% VOICEOVER:
+% To deepen your understanding, review materials from regulators like the FTC, read through legal cases, and keep up with emerging guidance from industry groups and standard-setting bodies.
+% The landscape of AI governance is evolving quickly. Laws may change, new frameworks may emerge, and best practices will be refined. Staying informed is a professional responsibility that helps you keep your pipeline and products aligned with the latest standards.
+% The references here—FTC guidelines, example cases like Mobley v. Workday or IntelliVision, and the lessons from Operation AI Comply—are valuable starting points. Use them as benchmarks to guide your journey toward ethical AI deployment.
+\begin{frame}{Additional Resources and References}
+\begin{itemize}
+\item FTC Guidelines: \href{https://www.ftc.gov/}{FTC.gov} for ongoing regulatory insights.
+\item Legal Case Studies: Learn from \textit{Mobley v. Workday} and \textit{IntelliVision} scenarios.
+\item Operation AI Comply: Lessons in accountability and evidence-based claims.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+\section{Closing Thoughts}
+%------------------------------------------------------------
+
+% VOICEOVER:
+% In closing, remember that ethical AI development is not an optional add-on; it is a core requirement. As AI grows in influence, the risks and responsibilities mount. It’s up to all of us—engineers, data scientists, product managers, and leaders—to embed fairness, transparency, and compliance into every step.
+% By doing so, you protect not only your users, who rely on these systems for decisions that can shape their lives, but also your organization, which risks legal trouble and reputational harm if it neglects these principles.
+% Above all, you ensure that this powerful technology is truly serving humanity, not undermining it. This sets a strong moral and professional foundation for all the technical topics we’ll cover in the next sessions. Let’s build ML pipelines that we can be proud of, pipelines that stand the test of time and regulation, and that genuinely benefit the world.
+\begin{frame}{Closing Thoughts}
+\begin{itemize}
+\item Ethical AI is essential, not optional.
+\item By integrating fairness, transparency, and compliance, we safeguard users, developers, and organizations.
+\item We ensure our ML pipelines serve humanity responsibly and sustainably.
+\end{itemize}
+\end{frame}
+
+\end{document}

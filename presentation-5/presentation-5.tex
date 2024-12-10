@@ -1,0 +1,373 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+\usepackage{multicol}
+
+% Metropolis adjustments
+\metroset{progressbar=none, sectionpage=none}
+\setbeamertemplate{footline}{}
+
+% Color and formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+ \nointerlineskip%
+ \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}%
+   \usebeamerfont{frametitle}\insertframetitle\par%
+   \if\insertframesubtitle\relax%
+   \else%
+     \vspace{0.5em}%
+     {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+   \fi%
+ \end{beamercolorbox}%
+}
+\makeatother
+
+\usepackage{minted}
+\usemintedstyle{friendly}
+\setminted{
+  fontsize=\tiny,
+  breaklines=true,
+  frame=single,
+  autogobble
+}
+
+\title{Code Quality, Security \& Ethical Governance}
+\subtitle{AI Masters Capstone Project - Presentation 5}
+\author{Jonathan Agustin}
+\date{November 2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+% Welcome to the concluding presentation in this series. We've covered data handling, fairness in model training, responsible deployment, and MLOps best practices. Now we focus on the fundamental underpinnings: code quality, robust security, attestation for trust, and deep ethical governance. Rachel Thomas’s warnings about data science enabling destabilization or atrocities, and the Volkswagen emissions scandal where an engineer faced prison time, highlight that we can’t hide behind “just following orders.” Ethical accountability extends from data to code. Today, we’ll show how to ensure code integrity, prevent malicious exploitation, and document decisions transparently.
+
+\maketitle
+
+%------------------------------------------------------------
+% Overview Slide
+%------------------------------------------------------------
+% Today we'll cover four key areas to ensure ethical ML development:
+% 1. Code Quality Assurance: Clean, maintainable code and rigorous reviews that double as ethical checkpoints.
+% 2. Security Scanning & Attestation: Use real tools like Snyk, CodeQL for vulnerability scanning, and Sigstore Cosign for supply chain attestation. Prevent code from becoming a vector for oppression or fraud.
+% 3. Automated Documentation & Reporting: Continuous generation of model cards, audit logs, and provenance records, ensuring transparency and enabling accountability.
+% 4. Ethical Software Development: Embedding moral reflection into the coding process, so no engineer can claim ignorance while enabling harmful features.
+
+\begin{frame}{Agenda}
+% By combining these elements—quality, security, documentation, and ethics—we finalize an ML ecosystem that is reliable, compliant, and committed to the public good.
+
+\begin{itemize}
+\item Code Quality Assurance
+\item Security Scanning \& Attestation
+\item Automating Documentation \& Reporting
+\item Ethical Software Development: Accountability \& Justice
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Code Quality Concept Slide
+%------------------------------------------------------------
+
+% Code quality isn’t just about style—it’s about clarity. Clarity reduces the space where unethical code can hide. Consider robust code reviews involving multiple stakeholders. If suspicious logic (like differential treatment of certain groups) appears, reviewers can flag it. Linters, formatters, and static analysis tools enforce standards that produce comprehensible code, making it harder to smuggle in unethical behavior. The Volkswagen emissions scandal demonstrated that a few lines of code can cause global harm. If code reviews and standards had been more stringent—and ethically informed—perhaps that deception would have been caught.
+
+\begin{frame}{Code Quality: Concept}
+\begin{itemize}
+\item Style guidelines \& linters to maintain consistency
+\item Code reviews as ethical checkpoints
+\item Clear comments \& docs to expose questionable logic
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Code Quality Example: Linters & Reviews (Concept Slide)
+%------------------------------------------------------------
+
+% Let’s illustrate integrating linters like flake8 and automated style checks into CI. We'll use GitHub Actions and show how clean code aids discoverability of potential ethical issues. Before the code, remember: these checks ensure no developer can claim “I didn’t know what that code did.” Everything is visible, traceable, and questionably logic stands out. We'll show a workflow that runs flake8 on every push, enforcing coding conventions. With clearer code, if someone attempts to implement a discriminatory filter, it’s more likely to be noticed and challenged.
+
+\begin{frame}{Code Quality: Linting \& Review Integration}
+\begin{itemize}
+\item Automated linting with flake8 or Black
+\item Fail pipeline if code smells appear, prompting deeper review
+\item Combine with PR templates encouraging ethical considerations
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Code Quality Example: Linter Workflow
+%------------------------------------------------------------
+\begin{frame}[fragile]{Code Quality: Linter Workflow}
+% This YAML snippet sets up a lint job in a GitHub Actions workflow, ensuring each commit meets style standards. While style alone doesn’t guarantee ethics, it’s a stepping stone, enabling more effective reviews where ethical flags can be raised.
+
+\begin{minted}{yaml}
+name: Lint Code
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install flake8
+        run: pip install flake8
+      - name: Run flake8
+        run: flake8 src/ --count --select=E9,F63,F7,F82 \
+             --show-source --statistics
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Security & Attestation Concept Slide
+%------------------------------------------------------------
+% Security scanning and attestation ensure code and dependencies aren’t weaponized. We’ll show real tools: Snyk for dependency scanning, GitHub CodeQL for SAST (static application security testing), and Sigstore Cosign for supply chain attestation. Insecure code or compromised dependencies can facilitate surveillance, censorship, or financial exploitation. Ethical ML demands ensuring no malicious party can co-opt your systems for harm. With attestation, we cryptographically sign artifacts so we know what code we’re running. If a malicious actor tries slipping unethical code, we’ll notice mismatched signatures. Snyk alerts us if a library is known for vulnerabilities that could enable data theft or sabotage.
+
+\begin{frame}{Security Scanning \& Attestation: Concept}
+
+
+\begin{itemize}
+\item Snyk or CodeQL for real-time vulnerability checks in CI
+\item Sigstore Cosign to sign \& verify container images
+\item Prevent malicious tampering and ensure traceability
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Security Scanning Code (Part 1 - Snyk)
+%------------------------------------------------------------
+% This is a snippet using Snyk to scan dependencies for known CVEs (Common Vulnerabilities and Exposures). If a critical CVE is found, we fail the build. This ensures we never deploy a model with a known exploit that could be used unethically.
+
+\begin{frame}[fragile]{Security Scanning (Snyk) - Part 1}
+\begin{minted}{yaml}
+name: Security Scan
+
+on: [push]
+
+jobs:
+  snyk-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Snyk Auth
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Snyk Test
+        run: snyk test --severity-threshold=high
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Security Scanning Code (Part 2 - CodeQL)
+%------------------------------------------------------------
+% CodeQL is GitHub’s semantic code analysis engine. It can detect complex vulnerabilities, even logic that could facilitate backdoors. By running CodeQL queries, we might detect code that, for instance, specifically targets certain user demographics in ways that could violate fairness or anti-discrimination laws.
+
+\begin{frame}[fragile]{Security Scanning (CodeQL) - Part 2}
+\begin{minted}{yaml}
+name: CodeQL Analysis
+
+on: [push, pull_request]
+
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: github/codeql-action/init@v2
+        with:
+          languages: python
+      - uses: github/codeql-action/analyze@v2
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Attestation Code (Sigstore Cosign) Concept Slide
+%------------------------------------------------------------
+% Attestation ensures we know exactly what we’re running. Sigstore Cosign can sign container images, producing cryptographic proofs that images haven’t been tampered with. If someone tries sneaking in unethical changes that give authoritarian regimes a backdoor to sensitive user data, the attestation check fails, preventing deployment of an unverified image. Cosign integrates with CI to sign and verify images automatically. If the signature or SBOM mismatch occurs, it halts deployment. This ensures the entire supply chain is accountable and transparent.
+
+\begin{frame}{Attestation: Sigstore Cosign - Concept}
+\begin{itemize}
+\item Sign container images with Cosign
+\item Verify signatures in CI before deployment
+\item Ensure every artifact is traceable to a verified source
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Attestation Code (Cosign)
+%------------------------------------------------------------
+\begin{frame}[fragile]{Attestation (Cosign) Code Example}
+% This snippet shows how to sign an image with Cosign and verify it in CI. If verification fails, the pipeline stops. With attestation, code authors can’t deny responsibility, and tampering attempts are thwarted.
+
+\begin{minted}{yaml}
+name: Attest Image
+
+on: [push]
+
+jobs:
+  attest-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install cosign
+        run: curl -sSfL https://raw.githubusercontent.com/sigstore/cosign/main/install.sh | sh -
+      - name: Sign image
+        run: ./cosign sign --key ${{ secrets.COSIGN_KEY }} registry/model-service:latest
+      - name: Verify image
+        run: ./cosign verify registry/model-service:latest
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Documentation & Reporting Concept Slide
+%------------------------------------------------------------
+% Documentation: generating model cards, audit logs, and provenance records. If a stakeholder questions a model’s fairness, they can inspect the model card for dataset sources, known biases, and historical performance. Audit logs detail who changed what and why. This ensures if unethical features were introduced or requested, there’s a record to hold individuals accountable. Transparency fosters trust and allows recourse for harmed parties. We’ll show code that generates a model card and posts it as an artifact. Regular updates keep everyone informed. In the event of investigation, these records provide crucial context and evidence.
+
+\begin{frame}{Documentation \& Reporting: Concept}
+\begin{itemize}
+\item Model cards detailing performance, bias, limitations
+\item Audit logs for changes, decisions, approvals
+\item Automatic updates on every model iteration
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Documentation & Reporting (Model Card Code)
+%------------------------------------------------------------
+\begin{frame}[fragile]{Model Card Generation Code}
+% This Python snippet creates a JSON model card whenever a model changes. It includes performance, fairness metrics, data sources, and ethical considerations. Integration in CI ensures no model is deployed without a current model card.
+
+\begin{minted}{python}
+import json
+
+def generate_model_card(model_name, performance, fairness, dataset_info):
+    card = {
+        "model_name": model_name,
+        "performance": performance,
+        "fairness": fairness,
+        "dataset_info": dataset_info,
+        "intended_use": "Classifier for domain X",
+        "limitations": "Limited testing on low-resource languages",
+        "ethical_considerations": "Potential bias in underrepresented groups"
+    }
+    return card
+
+# Example usage
+perf={"accuracy":0.93,"f1":0.90}
+fair={"max_disparity":0.1}
+data={"source":"internal_v4","size":60000}
+
+card=generate_model_card("my_model_v3",perf,fair,data)
+with open("model_card.json","w") as f:
+    json.dump(card,f,indent=2)
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Documentation & Reporting (CI Integration)
+%------------------------------------------------------------
+\begin{frame}[fragile]{Model Card CI Integration}
+% Adding this step to CI: each update triggers card generation. Stakeholders—internal reviewers, external auditors—can download the model card artifact to understand changes and compliance.
+
+\begin{minted}{yaml}
+name: Model Card Update
+
+on: [push]
+
+jobs:
+  model-card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate model card
+        run: python scripts/generate_model_card.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: model_card
+          path: model_card.json
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Ethical Software Development Concept Slide
+%------------------------------------------------------------
+% Ethical software development ties it all together. Code reviews, now supported by quality, security, and transparency tools, become moral debates: is this feature ethical? Could it harm marginalized groups?
+% The Volkswagen case shows following unethical instructions can lead to prison. We must encourage engineers to question suspicious directives and escalate concerns. These practices protect users, developers, and society. Add ethics checks to PR templates, require reviewers to answer ethical questions, and rotate ethical review duty among team members. Integrate education on historical misuse of data science—so no one can claim ignorance.
+
+\begin{frame}{Ethical Software Development: Concept}
+\begin{itemize}
+\item Ethics checklists in PR templates
+\item Education on historical abuses (e.g., disinformation campaigns)
+\item A culture where “just following orders” is unacceptable
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Ethical Software Development (PR Template)
+%------------------------------------------------------------
+% A PR template example: developers must explicitly answer ethical questions. This template prompts reflection—if a feature risks discriminatory outcomes, developers must disclose and address it before merging.
+
+\begin{frame}[fragile]{Ethical PR Template Example}
+\begin{minted}{markdown}
+<!-- Pull Request Template -->
+
+**High-Level Description of Changes:**
+- Introduces a new classification threshold feature.
+
+**Ethical Considerations:**
+- Could this feature disadvantage a protected group? If yes, how are we mitigating?
+- Does it align with our fairness & compliance policies?
+
+**Security & Privacy:**
+- Any new data access? If yes, is it secured and necessary?
+- Did we run Snyk/CodeQL checks? Any findings?
+
+**Testing & Validation:**
+- Mention test results and model card updates.
+
+**Approvals Needed:**
+- Ethics reviewer sign-off required.
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Bringing It All Together
+%------------------------------------------------------------
+% We’ve assembled a comprehensive framework: Code quality exposes logic, enabling ethical scrutiny. Security scanning & attestation prevent malicious abuse and ensure trust in artifacts. Documentation & reporting maintain transparency, enabling accountability and contestability. Ethical development practices ensure that engineers confront moral implications rather than ignore them. This holistic approach ensures we develop ML systems that earn trust, comply with law, and uplift rather than harm communities.
+
+\begin{frame}{A Complete Ethical ML Ecosystem}
+\begin{itemize}
+\item Unified approach: quality, security, transparency, ethics
+\item Continuous vigilance and improvement
+\item A practice that acknowledges the gravity of ML’s impact on society
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Conclusion & Wrap-Up
+%------------------------------------------------------------
+% With these safeguards, you stand on solid ground—technically proficient, legally compliant, ethically sound. Like the Volkswagen case, remember engineers can be held personally responsible. Like Rachel Thomas’s insights, recall that data science can either stabilize societies or tear them apart. Our code can protect or oppress. Choose to code responsibly. Uphold these standards. Integrate these principles into every workflow. This isn’t just about professional pride—it’s about moral duty. As you leave this series, carry forward the lessons learned. Your ML systems shape human destinies. Make them worthy of trust, informed by the best in us, not enabling the worst.
+
+\begin{frame}{Final Thoughts}
+
+\begin{itemize}
+\item Responsibility: Own your code’s impact
+\item Courage: Question unethical directives
+\item Integrity: Build systems aligned with humanity’s highest values
+\end{itemize}
+\end{frame}
+
+\end{document}

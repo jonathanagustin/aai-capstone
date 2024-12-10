@@ -1,0 +1,23 @@
+# ci_cd_lint_workflow.yml
+#
+# This GitHub Actions workflow sets up Python, installs flake8, and runs it on the src/ directory.
+# Any style violations will cause the job to fail, prompting a review and potential ethical scrutiny.
+
+name: Lint Code
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install flake8
+        run: pip install flake8
+      - name: Run flake8
+        run: flake8 src/ --count --select=E9,F63,F7,F82 \
+             --show-source --statistics

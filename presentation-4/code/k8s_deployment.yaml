@@ -1,0 +1,72 @@
+# k8s_deployment.yaml
+#
+# Demonstrates:
+# - Rolling updates for zero-downtime
+# - Resource requests/limits
+# - Prometheus annotations for metrics scraping
+# - Liveness and readiness probes for health checks
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service
+  labels:
+    app: model-service
+    environment: production
+spec:
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: model-service
+  template:
+    metadata:
+      labels:
+        app: model-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: model-server
+        image: model-service:latest
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        env:
+        - name: MODEL_PATH
+          value: "/models/current"
+        - name: MONITORING_PORT
+          value: "8080"
+        volumeMounts:
+        - name: model-store
+          mountPath: "/models"
+          readOnly: true
+      volumes:
+      - name: model-store
+        persistentVolumeClaim:
+          claimName: model-store-pvc

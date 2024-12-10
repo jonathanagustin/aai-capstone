@@ -1,0 +1,313 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Modern theme & fonts
+\usetheme{metropolis}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{bookmark}
+
+% Metropolis adjustments
+\metroset{progressbar=none, sectionpage=none}
+\setbeamertemplate{footline}{}
+
+% Colors and frame title formatting
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+
+% Center frame titles
+\makeatletter
+\setbeamertemplate{frametitle}{
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0.3cm, center]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle\par%
+    \if\insertframesubtitle\relax%
+    \else%
+      \vspace{0.5em}%
+      {\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+    \fi%
+  \end{beamercolorbox}%
+}
+\makeatother
+
+% Additional packages
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    bookmarksnumbered=true
+}
+\usepackage{etoolbox}
+\usepackage{media9}
+\usepackage{minted}
+\usemintedstyle{friendly}
+\usepackage{menukeys}
+
+\title{Automating Training \& Fairness Checks}
+\subtitle{AI Masters Capstone Project - Presentation 3}
+\author{Jonathan Agustin}
+\date{November 2024}
+
+\begin{document}
+
+%------------------------------------------------------------
+% Title Slide
+%------------------------------------------------------------
+% In our previous presentations, we established the ethical and technical foundations of handling data responsibly and preparing it for machine learning. We explored why fairness, compliance, and transparency matter at every stage of the ML pipeline. Now, we turn our attention to what happens next: the model training and model development phases.
+% During this stage, automation becomes a central pillar. Manually training models, tuning hyperparameters, and experimenting with different configurations can be slow, prone to human error, and lack reproducibility. By automating these processes and integrating them with CI/CD pipelines, we ensure that each model build is consistent and efficiently executed.
+% Yet automation alone isn't enough. We must track experiments, version models, ensure interpretability, check fairness, and evaluate rigorously. This presentation guides us through these techniques and considerations for principled, transparent, and trustworthy ML model development.
+
+\maketitle
+
+%------------------------------------------------------------
+% Overview Slide
+%------------------------------------------------------------
+% Today's Agenda:
+% 1. Automating model training: pipelines, CI/CD integration, hyperparameter optimization.
+% 2. Model versioning & experiment tracking: reproducibility and compliance.
+% 3. Explainability & transparency: building trust and meeting regulatory demands.
+% 4. Fairness & bias mitigation: ensuring equitable outcomes.
+% 5. Evaluation strategies: data splits, class imbalance, interpretability trade-offs.
+% By integrating these, we prepare models for ethical and effective deployment.
+
+\begin{frame}{What We’ll Cover Today}
+\begin{itemize}
+\item Automating model training: pipelines, hyperparameter tuning, CI/CD integration
+\item Model versioning \& experiment tracking: reproducibility and accountability
+\item Explainability \& transparency: fostering user trust, meeting compliance
+\item Fairness in AI models: detecting and mitigating biases
+\item Evaluation: data splits, handling class imbalance, interpretability-speed trade-offs
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Automating Model Training
+%------------------------------------------------------------
+% Manual training is time-consuming and error-prone. Automating involves defining end-to-end pipelines for preprocessing, training, and evaluation. Integrated with CI/CD, each code change can trigger retraining and validation, ensuring rapid feedback, consistent quality, and more time for strategic improvements.
+
+\begin{frame}[fragile]{Automating Model Training}
+\begin{itemize}
+\item Define pipelines for consistent preprocessing, training, and evaluation
+\item Integrate with CI/CD for reproducible, scalable runs
+\item Focus on insight and strategy, not repetitive labor
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+pl = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression())])
+pl.fit(X_train, y_train)
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Hyperparameter Optimization
+%------------------------------------------------------------
+% Hyperparameter optimization (HPO) refines model performance by exploring parameter spaces systematically. Bayesian optimization accelerates the search. Logging trials ensures transparency and a data-driven approach to tuning.
+
+\begin{frame}[fragile]{Hyperparameter Optimization}
+\begin{itemize}
+\item Systematically explore parameters via grid, random, or Bayesian search
+\item Bayesian optimization learns from past trials for efficient convergence
+\item Log trials for traceability and reproducibility
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+from skopt import BayesSearchCV
+
+param_space = {'clf__C': (1e-3, 1e3, 'log-uniform')}
+opt = BayesSearchCV(pl, param_space, n_iter=20, scoring='f1')
+opt.fit(X_train, y_train)
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Model Versioning & Experiment Tracking
+%------------------------------------------------------------
+% Without tracking, insights vanish. Tools like MLflow store metrics, parameters, and code diffs. This ensures reproducibility, auditing capability, and compliance. When stakeholders ask why a model changed, you have a clear lineage.
+
+\begin{frame}[fragile]{Model Versioning \& Experiment Tracking}
+\begin{itemize}
+\item Log metrics, parameters, environment details per run
+\item Quickly revert or reproduce past experiments
+\item Maintain a living repository of model evolution
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+import mlflow
+with mlflow.start_run():
+    pl.fit(X_train, y_train)
+    acc = pl.score(X_val, y_val)
+    mlflow.log_metric("accuracy", acc)
+    mlflow.sklearn.log_model(pl, "model")
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Transparent & Explainable AI
+%------------------------------------------------------------
+% Complex models must be explainable to build trust, especially in regulated fields. SHAP or LIME illustrate how features influence predictions, supporting responsible use, regulatory compliance, and stakeholder confidence.
+
+\begin{frame}[fragile]{Transparent \& Explainable AI}
+\begin{itemize}
+\item Use SHAP/LIME to understand feature impact on predictions
+\item Provide evidence for decisions, enhancing trust
+\item Identify spurious reasoning or biases through interpretability
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+import shap
+explainer = shap.LinearExplainer(pl['clf'], X_train)
+sv = explainer.shap_values(X_val[:1])
+shap.force_plot(explainer.expected_value, sv, X_val.iloc[0])
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Fairness in AI Models
+%------------------------------------------------------------
+% A highly accurate model may still harm certain groups. Evaluate performance by demographic groups, measure fairness metrics, and apply re-weighting or threshold adjustments to ensure equitable outcomes. This continuous fairness monitoring aligns models with ethical and legal standards.
+
+\begin{frame}[fragile]{Fairness in AI Models}
+\begin{itemize}
+\item Evaluate performance by subgroup to detect disparities
+\item Apply fairness metrics, re-weighting, or threshold adjustments
+\item Continuously monitor fairness as data and usage evolve
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+# Fairness check (pseudo-code)
+priv_scores = pl.score(X_priv, y_priv)
+unpriv_scores = pl.score(X_unpriv, y_unpriv)
+disparity = unpriv_scores / priv_scores
+if disparity < 0.8:
+    print("Potential bias detected.")
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Considerations for Model Evaluation
+%------------------------------------------------------------
+% Single metrics like accuracy can be misleading. Consider train/val/test splits, beyond-accuracy metrics, class imbalance, interpretability, and runtime. Document limitations. This holistic approach ensures a model is not only high-performing but also fair, transparent, and practical.
+
+\begin{frame}{Considerations for Model Evaluation}
+\begin{itemize}
+\item Proper splits (train, val, test) to prevent overfitting
+\item Use metrics beyond accuracy: precision, recall, F1, fairness measures
+\item Address class imbalance to avoid overlooking critical minority classes
+\item Consider interpretability and latency constraints
+\item Document biases, limitations, and known failure modes
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Properly Splitting Your Data
+%------------------------------------------------------------
+% Honest evaluation depends on stable, representative splits. Keep the test set untouched until final evaluation. Representative splitting ensures generalizable, comparable metrics over time.
+
+\begin{frame}[fragile]{Properly Splitting Your Data}
+\begin{itemize}
+\item Train/Val/Test splits for unbiased assessment
+\item Representative distributions for realistic performance estimates
+\item Keep test set stable for consistent comparisons
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+from sklearn.model_selection import train_test_split
+X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25)
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Handling Class Imbalance
+%------------------------------------------------------------
+% Imbalanced data skews accuracy. Use precision, recall, F1 to evaluate minority classes. Adjust class weights or resample to ensure equitable treatment. This guarantees that performance aligns with real-world needs and ethical standards.
+
+\begin{frame}[fragile]{Handling Class Imbalance}
+\begin{itemize}
+\item Accuracy can hide poor minority class performance
+\item Use precision/recall/F1 or AUC for minority-focused insight
+\item Adjust class weights or resample to improve fairness
+\end{itemize}
+
+\begin{minted}[fontsize=\small]{python}
+from sklearn.utils import class_weight
+cw = class_weight.compute_class_weight(
+    'balanced', classes=np.unique(y_train), y=y_train)
+pl['clf'].set_params(class_weight=dict(enumerate(cw)))
+\end{minted}
+\end{frame}
+
+%------------------------------------------------------------
+% Offline vs. Online Evaluation
+%------------------------------------------------------------
+% Offline tests provide stable benchmarks. Online evaluation in production considers latency, user feedback, and evolving data. Using both approaches ensures continuous model relevance and quality, bridging theoretical rigor with practical adaptability.
+
+\begin{frame}{Offline vs. Online Evaluation}
+\begin{itemize}
+\item Offline: controlled, stable benchmarks for initial model selection
+\item Online: real-world feedback, latency, data drift considerations
+\item Combine both for sustained relevance and reliability
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Trade-offs in Model Evaluation
+%------------------------------------------------------------
+% Different contexts may value different metrics. Some require interpretability over raw accuracy; others need speed over complexity. Documenting and justifying these trade-offs ensures informed decisions that respect ethical and practical constraints.
+
+\begin{frame}{Trade-offs in Model Evaluation}
+\begin{itemize}
+\item Interpretability vs. accuracy: transparent decisions may matter more than marginal accuracy gains
+\item Latency vs. complexity: speed can be critical for real-time applications
+\item Resource costs vs. performance: consider environmental and financial footprints
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Limitations and Bias in Evaluation
+%------------------------------------------------------------
+% All metrics and methods have limits. Models may degrade over time or fail on edge cases. Documenting known biases and testing challenging scenarios maintains honesty and promotes continuous improvement.
+
+\begin{frame}{Limitations and Bias in Evaluation}
+\begin{itemize}
+\item Acknowledge no metric is perfect
+\item Document known biases and failure modes in model cards
+\item Periodically test on challenging or adversarial data to ensure resilience
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------
+% Putting It All Together
+%------------------------------------------------------------
+% By combining automation, experiment tracking, explainability, fairness checks, and comprehensive evaluation, we form a coherent framework. Ethical data handling extends into ethical model training and evaluation. This sustainable pipeline ensures we develop models that can be deployed confidently and continually improved as conditions evolve.
+
+\begin{frame}{A Holistic, Ethical Development Lifecycle}
+\begin{itemize}
+\item Automate and track to ensure reliability and scalability
+\item Integrate explainability, fairness, and balanced evaluation
+\item Adapt and refine with changing data and needs
+\end{itemize}
+
+\emph{This integrated approach elevates ML from mere functionality to principled, ethical practice.}
+\end{frame}
+
+%------------------------------------------------------------
+% Conclusion & Next Steps
+%------------------------------------------------------------
+% We’ve progressed from ethical data preparation to automated, explainable, and fair model training. Next, we address deployment. Deployment involves continuous monitoring, safeguarding privacy, maintaining fairness, and ensuring scalability and security. We carry these principles forward, preserving trust and compliance at every stage.
+
+\begin{frame}{Next Steps}
+\begin{itemize}
+\item Next: Deployment Automation \& Ethical Deployment Practices
+\item Extend fairness, transparency, and compliance into production
+\item Continuously monitor and adapt to maintain trust and efficacy
+\end{itemize}
+\end{frame}
+
+\end{document}
