@@ -1,0 +1,20 @@
+# ci_cd_cosign.yml
+#
+# Uses Sigstore Cosign to sign and verify container images.
+# Ensures provenance and integrity of artifacts, so no one can deny responsibility or slip malicious code unnoticed.
+
+name: Attest Image
+
+on: [push]
+
+jobs:
+  attest-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install cosign
+        run: curl -sSfL https://raw.githubusercontent.com/sigstore/cosign/main/install.sh | sh -
+      - name: Sign image
+        run: ./cosign sign --key ${{ secrets.COSIGN_KEY }} registry/model-service:latest
+      - name: Verify image
+        run: ./cosign verify registry/model-service:latest

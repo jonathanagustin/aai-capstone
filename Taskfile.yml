@@ -17,9 +17,3 @@ tasks:
     desc: "Clean auxiliary files"
     cmds:
       - rm -rf *.aux *.log *.out *.toc *.bbl *.blg *.dvi *.fdb_latexmk *.fls *.synctex.gz *.xdv *.lof *.lot *.nav *.snm *.vrb *.gz *.toc
-
-  status:
-    desc: "Show generated files"
-    silent: false
-    cmds:
-      - ls -l output || echo "No output directory or files yet."

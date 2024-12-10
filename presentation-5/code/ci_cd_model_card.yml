@@ -1,0 +1,21 @@
+# ci_cd_model_card.yml
+#
+# Runs after a successful model build to generate and archive a model card,
+# ensuring a historical record of each model's capabilities and assumptions.
+
+name: Model Card Update
+
+on: [push]
+
+jobs:
+  model-card:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate model card
+        run: python scripts/generate_model_card.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: model_card
+          path: model_card.json

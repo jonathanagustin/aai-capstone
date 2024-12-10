@@ -1,0 +1,18 @@
+# ci_cd_snyk.yml
+#
+# Runs Snyk on every push to detect vulnerabilities in dependencies.
+# If any high-severity issues are found, deployment is blocked, preventing malicious exploitation.
+
+name: Security Scan
+
+on: [push]
+
+jobs:
+  snyk-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Snyk Auth
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Snyk Test
+        run: snyk test --severity-threshold=high
