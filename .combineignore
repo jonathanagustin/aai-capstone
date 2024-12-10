@@ -1,4 +1,10 @@
 __pycache__/
+_minted-presentation-1/
+_minted-presentation-2/
+_minted-presentation-3/
+_minted-presentation-4/
+_minted-presentation-5/
+_minted-presentation-extra/
 _minted-presentation/
 .archive/
 .bundle/
@@ -22,6 +28,7 @@ _minted-presentation/
 .npm/
 .parcel-cache/
 .pnpm-store/
+.python-version
 .python-version
 .svelte-kit/
 .svn/
@@ -78,6 +85,7 @@ _minted-presentation/
 *.ppt
 *.pptx
 *.pyc
+*.pygtex
 *.rar
 *.so
 *.sqlite
@@ -140,6 +148,7 @@ presentation.synctex.gz
 presentation.vrb
 public/audio/
 pyproject.toml
+scripts/
 SECURITY.md
 target/
 temp/

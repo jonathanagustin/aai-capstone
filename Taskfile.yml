@@ -6,16 +6,6 @@ tasks:
     cmds:
       - task --list
 
-  default:
-    desc: "Run the complete workflow: install, setup, generate, flatten, convert"
-    cmds:
-      - task: install
-      - task: setup
-      - task: generate
-      - task: flatten
-      - task: convert
-    silent: true
-
   install:
     desc: "Install necessary packages"
     cmds:
@@ -23,66 +13,10 @@ tasks:
       - sudo apt-get install -y ghostscript imagemagick latexmk
       - sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-latex-recommended
       - sudo apt-get install -y python3-pygments
-
-  setup:
-    desc: "Create necessary directories if they do not exist"
-    cmds:
-      - mkdir -p output
-    status:
-      - test -d output
-
-  generate:
-    desc: "Generate presentation PDF using lualatex"
-    deps: [setup]
-    cmds:
-      - task: clean
-      - latexmk -f -shell-escape -pdf -lualatex -interaction=nonstopmode -output-directory=output presentation-*.tex presentation-extra.tex
-    sources:
-      - presentation-*.tex
-      - presentation-extra.tex
-    generates:
-      - output/presentation-*.pdf
-      - output/presentation-extra.pdf
-    status:
-      - test -f output/presentation-1.pdf
-
-  flatten:
-    desc: "Flatten the PDFs to remove interactive elements"
-    deps: [generate]
-    cmds:
-      - |
-        for f in output/presentation-*.pdf; do
-          [ -f "$f" ] && gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -dCompatibilityLevel=1.5 -sOutputFile="output/flattened_$(basename "$f")" "$f"
-        done
-    sources:
-      - output/presentation-*.pdf
-    generates:
-      - output/flattened_presentation-*.pdf
-
-  convert:
-    desc: "Convert flattened presentation PDF pages to PNG images"
-    deps: [flatten]
-    cmds:
-      - mkdir -p output
-      - |
-          for f in output/flattened_presentation-*.pdf; do
-            [ -f "$f" ] && convert -density 300 -quality 100 "$f" "output/$(basename "${f/.pdf}")-slide-%d.png"
-          done
-    sources:
-      - output/flattened_presentation-*.pdf
-    generates:
-      - output/flattened_presentation-*-slide-*.png
-
   clean:
     desc: "Clean auxiliary files"
     cmds:
-      - rm -rf output
-      - rm -f presentation-*.pyg || true
-      - |
-        for f in presentation-*.tex; do
-          ([ -f "$f" ] && latexmk -c -outdir=output "$f") > /dev/null
-        done
-      - rm -rf output || true
+      - rm -rf *.aux *.log *.out *.toc *.bbl *.blg *.dvi *.fdb_latexmk *.fls *.synctex.gz *.xdv *.lof *.lot *.nav *.snm *.vrb *.gz
 
   status:
     desc: "Show generated files"
