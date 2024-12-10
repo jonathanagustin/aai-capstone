@@ -2,6 +2,10 @@
 
 This repository houses a series of presentations, code snippets, and supporting materials demonstrating how to build a comprehensive, automated, and ethically grounded machine learning (ML) pipeline. The content is structured into five key presentations, each exploring different phases of the ML lifecycle—from data handling and training to deployment automation, code quality, and ethical governance.
 
+## Video Presentations
+
+Video presentations are available in Vimeo in [here](https://vimeo.com/showcase/11489928).
+
 ## Contents
 
 ```plaintext
