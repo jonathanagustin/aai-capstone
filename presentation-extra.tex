@@ -1,10 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
-
-% Modern theme & fonts with T1 encoding
 \usetheme{metropolis}
 \usefonttheme{professionalfonts}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage{fontspec}
+\setsansfont{Arial}
+\renewcommand{\familydefault}{\sfdefault}
+
 \usepackage{bookmark}
 
 % Metropolis adjustments
@@ -30,6 +30,8 @@
   \end{beamercolorbox}%
 }
 \makeatother
+
+
 
 % Packages
 \usepackage{graphicx}
@@ -196,21 +198,27 @@
 % Tradeoffs: Colab is convenient, requires no local setup, and is great for quick experiments or teaching. However, it's limited in customization, can be slower for large datasets if they need to be repeatedly uploaded, and sessions can expire, causing a need to rerun everything. Despite these tradeoffs, Colab can be an excellent way to prototype quickly and share reproducible notebooks.
 %%% VOICEOVER OFF
 \begin{frame}{Google Colab}
-\begin{itemize}
-\item Pros:
+
   \begin{itemize}
-    \item No local setup required
-    \item Free GPU/TPU support
-    \item Easy to share and collaborate
+
+    \item Pros:
+      \begin{itemize}
+        \item No local setup required
+        \item Free GPU/TPU support
+        \item Easy to share and collaborate
+      \end{itemize}
+
+    \item Cons / Tradeoffs:
+      \begin{itemize}
+        \item Session timeouts require reruns
+        \item Limited persistence and customization
+        \item Potential slower file I/O for large datasets
+      \end{itemize}
+
+    \item Ideal for rapid prototyping and teaching
+
   \end{itemize}
-\item Cons / Tradeoffs:
-  \begin{itemize}
-    \item Session timeouts require reruns
-    \item Limited persistence and customization
-    \item Potential slower file I/O for large datasets
-  \end{itemize}
-\item Ideal for rapid prototyping and teaching
-\end{itemize}
+
 \end{frame}
 
 %------------------------------------------------------------

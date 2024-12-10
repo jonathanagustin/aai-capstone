@@ -65,7 +65,7 @@ tasks:
       - mkdir -p output
       - |
           for f in output/flattened_presentation-*.pdf; do
-            [ -f "$f" ] && convert -density 300 -quality 100 "$f" "output/$(basename "${f/.pdf}")-slide.png"
+            [ -f "$f" ] && convert -density 300 -quality 100 "$f" "output/$(basename "${f/.pdf}")-slide-%d.png"
           done
     sources:
       - output/flattened_presentation-*.pdf

@@ -8,7 +8,7 @@
 \usepackage{bookmark}
 
 % Metropolis adjustments
-\metroset{progressbar=none}
+\metroset{progressbar=none, sectionpage=none}
 \setbeamertemplate{footline}{}
 
 % Colors and frame title formatting
@@ -55,102 +55,90 @@
 %------------------------------------------------------------
 % Title Slide
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Welcome back to our deep dive into building ethical and automated ML pipelines.
-% In our first presentation, we explored the overarching framework of automation and ethics in ML.
-% Now, we focus on the critical step of preparing data.
-%
-% Data is the raw fuel that powers machine learning models, but it’s often messy and incomplete. Beyond cleanliness, we must ensure that our data handling practices respect privacy, comply with regulations, and reduce biases. We’ll also discuss the crucial art of creating a proper validation set, as emphasized by Rachel Thomas (2017), to ensure our models generalize well in real-world scenarios.
-%
-% Let’s begin by reaffirming the importance of approaching data and validation strategies with an ethical mindset.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Welcome back to our journey toward building automated, ethically grounded ML pipelines.
+% In our first presentation, we laid out why automation, fairness, accountability, and compliance matter at every stage. We examined legal precedents, ethical imperatives, and the need for robust infrastructure.
+% Today, we zoom in on the data layer—where all ML begins. Data is not just numbers; it reflects people’s lives, societal structures, and historical decisions. How we handle data can reinforce or reduce inequities.
+% We’ll start by exploring the importance of ethical data handling and how automation helps maintain data integrity at scale. Then, we’ll delve into advanced validation strategies, guided by thought leaders like Rachel Thomas (2017), ensuring we create realistic validation sets that genuinely measure how our models will perform in the wild.
+% We’ll also examine privacy and compliance, showing how to integrate legal requirements (like GDPR) into your data pipeline. Finally, we’ll discuss detecting and mitigating biases before training, preventing the replication of harmful stereotypes.
+% By the end of this session, you’ll have a comprehensive framework for preparing and validating data ethically, paving the way for fair and responsible models in future steps.
+
 \maketitle
 
 %------------------------------------------------------------
 % Overview Slide
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Here’s what we’ll cover today:
-% 1. Why ethical data handling matters, including trust, fairness, and the impact on real people.
-% 2. Automated preprocessing techniques with practical code examples.
-% 3. Data validation and quality checks integrated into automated workflows.
-% 4. Privacy considerations, ensuring compliance with regulations like GDPR.
-% 5. Creating a robust validation set that genuinely reflects future data scenarios, referencing guidance from Rachel Thomas (2017).
-% 6. Identifying and mitigating bias in your dataset before modeling.
-%
-% By the end, you’ll have a practical toolkit for building trustworthy data pipelines, improved validation protocols, and fair models.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Today’s agenda is packed with actionable insights:
+% 1. The ethical dimension of data handling: how trust, fairness, and societal impact guide our decisions.
+% 2. Automating preprocessing: ensuring every data cleaning step is reproducible, transparent, and consistent.
+% 3. Data validation and quality checks integrated into automated workflows to catch issues early.
+% 4. Privacy and regulatory compliance: embedding best practices to uphold user rights and follow laws like GDPR.
+% 5. Creating an effective validation set as emphasized by Rachel Thomas (2017), who reminds us that a naive validation strategy can mislead our model assessment.
+% 6. Identifying and reducing bias in datasets before they reach the modeling stage.
+% Throughout, we’ll connect these steps to broader ethical principles and show how each technical choice shapes the fairness and accountability of the final ML system.
+
 \begin{frame}{What We’ll Cover Today}
 \begin{itemize}
 \item Ethical data handling: fundamentals and importance
 \item Automated preprocessing: cleaning, transforming, and validating data
 \item Privacy \& compliance: embedding regulations into data pipelines
-\item Creating effective validation sets (Thomas, 2017): going beyond random splits
-\item Detecting \& mitigating bias before training
+\item Creating effective validation sets (Thomas, 2017): beyond naive splits
+\item Detecting \& mitigating dataset bias before model training
 \end{itemize}
 
-\vspace{0.8em}
-\emph{We’ll bridge theory and practice, ensuring both technical rigor and ethical integrity.}
+\emph{Our goal: robust, transparent, and ethical data pipelines that set the stage for trustworthy ML.}
 \end{frame}
 
 %------------------------------------------------------------
 % Importance of Ethical Data Handling
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Ethical data handling is more than a checkbox; it’s about respect and responsibility.
-% Data represents real individuals—patients, drivers, customers. Handling it poorly can have tangible consequences, from privacy violations to reinforcing harmful stereotypes.
-%
-% Ethical stewardship also builds trust, helping organizations avoid legal complications and cultivate a positive public image.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Ethical data handling isn’t an afterthought—it’s foundational. Every record might represent a person’s credit history, medical condition, or hiring decision. Mishandling this data can lead to real harm: privacy infringements, unfair rejections of job applications, or biased lending decisions.
+% By embracing ethical principles, we foster trust. Users and regulators alike want assurance that AI products treat everyone fairly and respect their rights. Organizations that embrace ethical stewardship stand out, avoid costly litigation, and build sustainable user relationships.
+% This approach isn’t just moral—it’s strategic. Ethical rigor in data handling can become a differentiator in a crowded marketplace, signaling that you value integrity as much as innovation.
+
 \begin{frame}{Why Ethical Data Handling Matters}
 \begin{itemize}
-\item Data = real people’s lives, rights, and opportunities
-\item Trust \& credibility: a long-term asset for AI-driven products
-\item Avoiding bias, protecting privacy, and ensuring fairness is both a moral and practical imperative
+\item Data represents real human stories, with tangible impacts
+\item Trust \& credibility: essential assets for long-term AI adoption
+\item Preventing bias, respecting privacy, and ensuring fairness safeguards users and protects organizations
 \end{itemize}
 
-\emph{Ethical principles aren’t just guidelines; they set the foundation for sustainable ML solutions.}
+\emph{Ethical standards in data handling underpin the entire ML lifecycle.}
 \end{frame}
 
 %------------------------------------------------------------
 % Automated Data Preprocessing Intro
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Real-world data is messy. Automated preprocessing:
-% - Standardizes data cleaning steps: missing values, outliers, inconsistent formats.
-% - Reduces manual errors and bias.
-% - Ensures reproducibility and transparency.
-%
-% By coding these steps, we create consistent data pipelines and improve long-term maintainability.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Real-world data is messy: missing values, inconsistent formats, outliers that can skew models. Manual preprocessing is error-prone and hard to scale. By automating these steps—cleaning, imputing, transforming—we ensure consistency across releases and traceability over time.
+% Automated pipelines also reduce human bias. If one engineer consistently drops certain data points or encodes categories differently each time, subtle biases can creep in. Automation enforces a uniform approach, making it easier to audit and improve.
+
 \begin{frame}{Automated Data Preprocessing}
 \begin{itemize}
-\item Detect \& handle missing values, outliers, and inconsistencies programmatically
-\item Transform features uniformly: encoding categories, normalizing units
-\item Ingrain reproducibility and transparency into your data workflows
+\item Standardize cleaning: detect and handle missing values, outliers, inconsistencies
+\item Consistent transformations: one-hot encoding, scaling, normalization are reproducible
+\item Transparent pipelines: every step documented, reducing human error and hidden bias
 \end{itemize}
 
-\emph{Automation reduces grunt work and lets you focus on building higher-quality, fairer models.}
+\emph{Automation turns data wrangling into a reliable, transparent foundation for fair ML.}
 \end{frame}
 
 %------------------------------------------------------------
 % Techniques for Data Cleaning and Transformation
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Suppose we have a CSV with missing values and categorical features. We can:
-% - Impute missing numeric data with means or medians.
-% - One-hot encode categorical variables.
-% - Scale numeric features for model readiness.
-%
-% Let’s see a code example.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Let’s consider a practical code snippet. Imagine you have a raw CSV with both numerical and categorical features. Some values are missing, some categories are unencoded, and numeric ranges vary widely.
+% Using tools like scikit-learn’s `SimpleImputer`, `OneHotEncoder`, and `StandardScaler`, we can create a reproducible pipeline. This pipeline ensures that regardless of who runs it and when, the same input leads to the same well-prepared output.
+% Over time, as data sources evolve or new features are added, you can update this pipeline in a version-controlled environment (like Git), maintaining a changelog and ensuring each modification is intentional and reviewed.
+
 \begin{frame}{Practical Preprocessing Techniques}
 \begin{minted}[fontsize=\small]{python}
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
-# Load raw data
 df = pd.read_csv("raw_data.csv")
 
 # Impute missing numeric values
@@ -158,7 +146,7 @@ numeric_cols = df.select_dtypes(include=['float','int']).columns
 imputer = SimpleImputer(strategy='mean')
 df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
 
-# One-hot encode categorical variables
+# Encode categorical variables
 categorical_cols = df.select_dtypes(include=['object']).columns
 encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
 encoded = encoder.fit_transform(df[categorical_cols])
@@ -170,20 +158,17 @@ scaler = StandardScaler()
 df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 \end{minted}
 
-\emph{This code ensures consistent, fair, and explainable preprocessing steps.}
+\emph{This pipeline enforces uniform steps, improving fairness and reducing arbitrary choices.}
 \end{frame}
 
 %------------------------------------------------------------
 % Data Validation and Quality Assurance
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% After cleaning, we must validate the data:
-% - Check schema compliance (e.g., no missing critical columns).
-% - Validate ranges and uniqueness constraints.
-% - Catch anomalies before training.
-%
-% Automated validation scripts help maintain long-term quality and trust.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Cleaning is a start, but how do we ensure ongoing data quality? Automated validation steps catch schema violations, unexpected values, or missing fields before training begins.
+% Tools like `pandera` let you define a schema that your data must adhere to. If something’s off—like ages outside a plausible range or missing critical columns—your pipeline can halt and alert the team. This prevents garbage-in, garbage-out scenarios and ensures that models are trained only on data that meets your standards.
+% Continual validation also supports transparency. When stakeholders ask, “How do we know the data was right?” you have a codified, automated verification process as evidence.
+
 \begin{frame}{Data Quality Assurance}
 \begin{minted}[fontsize=\small]{python}
 import pandera as pa
@@ -192,7 +177,7 @@ from pandera.typing import DataFrame, Series
 class InputSchema(pa.SchemaModel):
     age: Series[int] = pa.Field(ge=0, le=120)
     income: Series[float] = pa.Field(ge=0)
-    # Add more fields and constraints as needed
+    # Add additional constraints as needed
     class Config:
         strict = True
 
@@ -200,138 +185,130 @@ try:
     validated_df = InputSchema.validate(df)
 except pa.errors.SchemaError as e:
     print("Data validation failed:", e)
-    # Halt pipeline, alert team
+    # Halt pipeline, send alerts
 \end{minted}
 
-\emph{Ensuring data integrity early prevents garbage-in, garbage-out scenarios.}
+\emph{Automated checks ensure data integrity at every step, building trust in your pipeline.}
 \end{frame}
 
 %------------------------------------------------------------
 % Creating a Good Validation Set (Incorporating Rachel Thomas, 2017)
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% As Rachel Thomas (2017) notes, choosing a proper validation set is crucial to ensure models generalize and don’t just overfit to your training data.
-%
-% A validation set:
-% - Helps select between different models or hyperparameters.
-% - Must be representative of future data, not just a random subset of the training data.
-%
-% If your validation set doesn’t reflect how new data differs (e.g., time shifts, new users), you risk building a model that fails in production.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Once the data is clean and validated, how do we ensure our models generalize? Rachel Thomas (2017) underscores the importance of choosing the right validation set. A naive random split might not capture real-world conditions.
+% The validation set helps us tune hyperparameters, select models, and understand performance before we ever touch the final test set. If it doesn’t reflect future conditions or production data patterns, you risk overestimating model quality.
+% For instance, if your future data differs by including new user segments, temporal shifts, or evolving categories, a random split won’t simulate this. We must design validation schemes aligned with actual future scenarios.
+
 \begin{frame}{Creating a Good Validation Set (Thomas, 2017)}
 \begin{itemize}
-\item Validation set: used to choose models and tune parameters, not just to optimize the training score.
-\item Must mimic future data conditions to prevent over-optimistic performance estimates.
-\item Go beyond simple random splits; consider time-series constraints, new users, or new categories.
+\item Validation = key to honest model assessment
+\item Must simulate future data conditions, not just be a random sample
+\item Consider time splits, new user groups, and domain shifts to reflect true deployment scenarios
 \end{itemize}
 
-\emph{“A poorly chosen validation set can be the most important culprit for model failures in production” (Thomas, 2017).}
+\emph{As Thomas (2017) notes, poor validation sets often cause failure when models meet the real world.}
 \end{frame}
 
 %------------------------------------------------------------
 % When Random Subsets Are Not Enough
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Thomas (2017) highlights scenarios where random splitting fails:
+% VOICEOVER:
+% Thomas (2017) gives concrete examples:
+% - Time Series: If your model predicts future sales, don’t randomly pick validation rows from the entire dataset. Instead, use later time periods for validation, ensuring the model is tested on truly “future” data.
+% - New Users or Items: If your production environment introduces new users or product categories not seen in training, random splits won’t catch that. You need to separate out these new entities into the validation set to replicate the challenge of novelty.
 %
-% - **Time Series:** Future data is not available during training. Use the latest part of historical data as validation.
-% - **New Entities:** If future data includes new users or new items unseen in training, ensure the validation set also simulates this scenario.
-%
-% This careful selection ensures we don’t overfit by inadvertently giving the model too much information about future conditions.
-%%% VOICEOVER OFF
+% By carefully constructing validation sets, you avoid false confidence. It ensures that the model’s impressive validation score actually translates into reliable performance in production.
+
 \begin{frame}{When is a Random Subset Not Good Enough? (Thomas, 2017)}
 \begin{itemize}
-\item **Time Series**: Validate on later time segments, not random points.
-\item **New Users or Entities**: If production data includes new people or new items, ensure your validation also excludes them from the training set.
-\item **Domain Shifts**: If the environment or context changes over time, replicate that change in your validation split.
+\item **Time Series**: Validate on data from a later time window
+\item **New Entities**: If future data includes new customers not seen before, validation should too
+\item **Domain Shifts**: Reflect changes in user behavior or market conditions in your validation strategy
 \end{itemize}
 
-\emph{This approach better simulates real-world deployment conditions.}
+\emph{Adopting these strategies reduces the risk of costly surprises post-deployment.}
 \end{frame}
 
 %------------------------------------------------------------
 % Practical Examples: Time Series & New Entities
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% For a time series, if historical data runs from Jan 2013 to Aug 2017, and future predictions start in Aug 2017:
-% - Validation set: the last two weeks before Aug 16, 2017.
-% - Training set: all earlier data.
+% VOICEOVER:
+% Let’s put this into context:
+% - In a Kaggle grocery sales forecasting challenge, if the training data runs from January 2013 to July 2017, and the final test period is August 2017, set aside the last two weeks of July for validation. This simulates the model’s ability to predict what happens after July ends.
+% - In distracted driver detection problems, you might train on a set of drivers and validate on a completely different set of drivers. If the model excels only on people it has “seen” before, it won’t generalize.
 %
-% For new entities (e.g., new drivers or fishing boats):
-% - Ensure validation includes entirely new entities not in training, so model performance isn’t artificially inflated by familiarity.
-%%% VOICEOVER OFF
+% These scenarios highlight that good validation simulates real deployment challenges. That’s what gives you confidence that your model’s performance metrics aren’t an illusion.
+
 \begin{frame}{Practical Examples (Thomas, 2017)}
 \begin{itemize}
-\item **Time series (Kaggle grocery sales):**
-  - Training: Jan 2013 to July 31, 2017
-  - Validation: Aug 1 to Aug 15, 2017
-  - Future (test) data: Aug 16 to Aug 31, 2017
-\item **New people or items (Distracted driver detection):**
-  - Training: selected drivers
-  - Validation: entirely different drivers
-  This avoids overfitting to known individuals’ characteristics.
+\item **Time Series (e.g., grocery sales)**:
+  - Training: Jan 2013 - July 31, 2017
+  - Validation: Aug 1 - Aug 15, 2017
+  - Test: Aug 16 onward
+\item **New Users (e.g., distracted driver)**:
+  - Training: certain known drivers
+  - Validation: entirely new, unseen drivers
 \end{itemize}
 
-\emph{These techniques reduce the gap between validation and real-world performance.}
+\emph{This tailored approach ensures validation metrics align with real-world performance.}
 \end{frame}
 
 %------------------------------------------------------------
 % Avoiding Overfitting to Public Benchmarks (Kaggle Context)
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Rachel Thomas (2017) also explains that Kaggle’s “training set” must be split into your own training and validation sets. Kaggle’s public leaderboard may represent only a portion of the test data, and overfitting to it can mislead you.
-%
-% By creating your own validation set that simulates future conditions, you prevent chasing leaderboard scores that don’t generalize.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Thomas (2017) also warns about overfitting to public leaderboards, such as those on Kaggle. The public leaderboard may represent only part of the test data, and if you tailor your model to those particular examples, you’ll perform poorly on the unseen private test portion.
+% Creating a strong, representative validation set in your local environment lets you trust your improvements. You’re not just chasing a leaderboard score—you’re building a model that’s genuinely robust. This mindset generalizes beyond competitions to any production scenario: don’t tweak your model just to shine on one particular slice of data.
+
 \begin{frame}{Kaggle Considerations (Thomas, 2017)}
 \begin{itemize}
-\item Kaggle’s “training data” = your training + validation sets
-\item The Kaggle test set is divided (unknown to you) into public and private parts
-\item A well-chosen validation set prevents overfitting to the public leaderboard and provides a truer measure of real-world performance.
+\item Kaggle’s public leaderboard is a partial view; don’t overfit to it
+\item Your custom validation set should approximate true future data, not just mimic the public leaderboard
+\item This ensures real, lasting performance gains rather than superficial improvements
 \end{itemize}
 
-\emph{Good validation strategies translate beyond competitions, ensuring robust, trustworthy ML solutions.}
+\emph{A sound validation strategy is an investment in long-term model reliability.}
 \end{frame}
 
 %------------------------------------------------------------
 % Ethical Data Management: Privacy & Regulations
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Ethics also demands respecting user privacy and following regulations.
+% VOICEOVER:
+% Beyond quality and validation, ethical data handling involves privacy protection. Regulatory frameworks like GDPR mandate certain rights and safeguards. Failing to comply can result in heavy penalties and damaged reputations.
+% Embed privacy into your pipeline:
+% - Anonymize or pseudonymize identifiers to avoid linking data back to individuals.
+% - Enforce data minimization: only collect what you need.
+% - Support user requests to access, correct, or delete their data.
 %
-% Strategies:
-% - Pseudonymize or anonymize sensitive fields.
-% - Encrypt data at rest and in transit.
-% - Minimize data collection, honor user consent, and support data erasure requests (GDPR).
-%
-% Let’s see how to pseudonymize user IDs.
-%%% VOICEOVER OFF
+% These aren’t just legal hoops; they maintain trust and user safety. Treat privacy as a cornerstone of your data pipeline design.
+
 \begin{frame}{Privacy Protection and Compliance}
 \begin{minted}[fontsize=\small]{python}
 import hashlib
 
+# Pseudonymize user IDs
 if 'user_id' in df.columns:
     df['user_id_hashed'] = df['user_id'].apply(
         lambda x: hashlib.sha256(str(x).encode()).hexdigest()
     )
     df.drop(columns=['user_id'], inplace=True)
 
-# Remove personally identifiable info
+# Remove PII (Personally Identifiable Information)
 pii_cols = ['name', 'email', 'phone_number']
 df = df.drop(columns=[col for col in pii_cols if col in df.columns])
 \end{minted}
 
-\emph{By integrating privacy safeguards early, we show respect for users and uphold legal standards.}
+\emph{Privacy-by-design: integrate compliance and respect for users at the data level.}
 \end{frame}
 
 %------------------------------------------------------------
 % Detecting and Mitigating Bias
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% Data can encode unfair biases. Tools like `aif360` can measure metrics like disparate impact.
-%
-% Once detected, we can re-weight or resample data to mitigate bias, ensuring equitable treatment of all groups.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% Bias is often hidden in historical data, reflecting societal inequalities. If left unchecked, models trained on biased data perpetuate these injustices.
+% Tools like IBM’s `aif360` can measure fairness metrics like disparate impact across protected groups. If bias is detected, techniques like reweighting or resampling help rebalance the dataset.
+% The result: more equitable outcomes. By actively managing bias now, you prevent negative headlines, regulatory scrutiny, and harm to marginalized communities. Ethical pipelines don’t just measure fairness—they actively improve it.
+
 \begin{frame}{Detecting and Mitigating Bias}
 \begin{minted}[fontsize=\small]{python}
 from aif360.datasets import BinaryLabelDataset
@@ -351,8 +328,8 @@ metric = BinaryLabelDatasetMetric(
     unprivileged_groups=[{'gender':0}],
     privileged_groups=[{'gender':1}]
 )
-disparate_impact = metric.disparate_impact()
-if disparate_impact < 0.8:
+
+if metric.disparate_impact() < 0.8:
     rw = Reweighing(
         unprivileged_groups=[{'gender':0}],
         privileged_groups=[{'gender':1}]
@@ -360,54 +337,62 @@ if disparate_impact < 0.8:
     data_balanced = rw.fit_transform(data)
 \end{minted}
 
-\emph{Catching bias early prevents amplifying injustices in production.}
+\emph{Embedding fairness checks ensures our ML solutions serve society responsibly.}
 \end{frame}
 
 %------------------------------------------------------------
 % Putting It All Together
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% We’ve combined:
-% - Ethical principles: respecting privacy, ensuring fairness.
-% - Technical rigor: automated preprocessing, validation, and bias checks.
-% - Proper validation sets (Thomas, 2017): ensuring that we realistically estimate future performance.
+% VOICEOVER:
+% We’ve explored how ethical principles intertwine with technical rigor:
+% - Ethical handling and privacy safeguards build trust.
+% - Automated preprocessing and validation ensure consistent, transparent data transformations.
+% - Careful validation set construction (Thomas, 2017) reflects real-world complexities, leading to realistic performance estimates.
+% - Bias detection and mitigation tools foster fairness.
 %
-% Together, these steps yield trustworthy pipelines that scale ethically.
-%%% VOICEOVER OFF
+% Together, these practices form a cohesive strategy for data preparation. This sets a solid, ethical stage for the next phases—model training, deployment, and continuous monitoring—ensuring that the entire ML lifecycle remains aligned with core human values.
+
 \begin{frame}{A Holistic Data Strategy}
 \begin{itemize}
-\item Integrate cleaning, validation, privacy, bias mitigation, and careful validation set construction into one pipeline.
-\item Document all steps for transparency and reproducibility.
-\item Move forward with confidence that your data handling sets the stage for fair, accurate ML models.
+\item Integrate cleaning, validation, privacy, bias mitigation, and realistic validation strategies
+\item Document processes for transparency and auditability
+\item Lay a foundation that upholds fairness, compliance, and trust through the entire ML pipeline
 \end{itemize}
 
-\emph{These practices ensure your ML models are ready to face real-world conditions responsibly.}
+\emph{Such an approach is not only ethically sound but also yields more robust, future-proof models.}
 \end{frame}
 
 %------------------------------------------------------------
 % Conclusion & Next Steps
 %------------------------------------------------------------
-%%% VOICEOVER ON
-% We’ve laid an ethical, rigorous data foundation. Next, we’ll explore automated model training and evaluation, ensuring that fairness and trust carry through to the modeling stage.
-%
-% By building upon ethically prepared data and carefully chosen validation sets, we set our models up for sustainable success and real-world impact.
-%%% VOICEOVER OFF
+% VOICEOVER:
+% We’ve established a robust, ethical data pipeline. Next, we’ll move to the modeling stage, where automated training, fairness checks during model selection, and ongoing monitoring come into play.
+% The journey continues with the same guiding principles: transparency, fairness, compliance, and user-centric thinking. By starting with good data practices, we give our future models the best possible chance to perform responsibly and effectively.
+
 \begin{frame}{Next Steps}
 \begin{itemize}
 \item Next Presentation: Automating Model Training \& Ethical Evaluation
-\item Connect today’s data pipeline principles to fair and robust model training
+\item Build upon today’s principles to ensure model choices and hyperparameter tuning respect the same ethical and rigorous standards
 \end{itemize}
 
-\emph{From data preparation to model training—the journey continues with ethics at the core.}
+\emph{Our pipeline is now primed for fair and responsible model development.}
 \end{frame}
 
 %------------------------------------------------------------
 % References Slide
 %------------------------------------------------------------
+% VOICEOVER:
+% Before we wrap up, here are some key references:
+% - Rachel Thomas (2017) provides a valuable blueprint for constructing effective validation sets, a crucial aspect of reliable ML evaluation.
+% - The aif360 toolkit and pandera library are practical tools to bring fairness metrics and data validation into your workflow.
+% - GDPR guidelines remind us that privacy isn’t optional; it’s legally mandated and ethically required.
+%
+% These resources help you solidify and continuously improve your data handling practices, ensuring that your pipeline remains aligned with best practices and evolving standards.
+
 \begin{frame}{References}
 \footnotesize
 \begin{itemize}
-\item Thomas, R. (2017). \textit{How (and why) to create a good validation set}. Retrieved from \url{https://rachel.fast.ai/posts/2017-11-13-validation-sets/}
+\item Thomas, R. (2017). \textit{How (and why) to create a good validation set}. \url{https://rachel.fast.ai/posts/2017-11-13-validation-sets/}
 \item \textit{aif360} toolkit: \url{https://github.com/Trusted-AI/AIF360}
 \item \textit{pandera} library: \url{https://pandera.readthedocs.io/}
 \item GDPR guidelines: \url{https://gdpr.eu/}
